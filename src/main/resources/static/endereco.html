@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Endereços</title>
+    <script>
+        const apiUrl = 'http://localhost:8080/enderecos'; // Substitua pela URL correta da sua API
+
+        // Função para buscar todos os endereços
+        async function fetchEnderecos() {
+            const response = await fetch(`${apiUrl}/listar`);
+            const enderecos = await response.json();
+            const enderecoList = document.getElementById('enderecoList');
+            enderecoList.innerHTML = '';
+            enderecos.forEach(endereco => {
+                enderecoList.innerHTML += `
+                    <li>
+                        ${endereco.logradouro}, ${endereco.numeroLocal} - ${endereco.cidade} (${endereco.uf}) - 
+                        <button onclick="deleteEndereco(${endereco.idEndereco})">Deletar</button>
+                        <button onclick="populateForm(${endereco.idEndereco}, '${endereco.cep}', '${endereco.logradouro}', '${endereco.numeroLocal}', '${endereco.cidade}', '${endereco.uf}', '${endereco.complemento}')">Editar</button>
+                    </li>
+                `;
+            });
+        }
+
+        // Função para criar um novo endereço
+        async function createEndereco(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const endereco = Object.fromEntries(formData);
+
+            const response = await fetch(`${apiUrl}/criar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(endereco),
+            });
+
+            if (response.ok) {
+                fetchEnderecos(); // Atualiza a lista de endereços
+                event.target.reset(); // Limpa o formulário
+            } else {
+                alert('Erro ao criar endereço.');
+            }
+        }
+
+        // Função para deletar um endereço
+        async function deleteEndereco(id) {
+            const response = await fetch(`${apiUrl}/remover/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                fetchEnderecos(); // Atualiza a lista de endereços
+            } else {
+                alert('Erro ao deletar endereço.');
+            }
+        }
+
+        // Função para popular o formulário com dados do endereço para edição
+        function populateForm(id, cep, logradouro, numeroLocal, cidade, uf, complemento) {
+            document.getElementById('enderecoId').value = id;
+            document.getElementById('cep').value = cep;
+            document.getElementById('logradouro').value = logradouro;
+            document.getElementById('numeroLocal').value = numeroLocal;
+            document.getElementById('cidade').value = cidade;
+            document.getElementById('uf').value = uf;
+            document.getElementById('complemento').value = complemento;
+        }
+
+        // Função para atualizar um endereço
+        async function updateEndereco(event) {
+            event.preventDefault();
+            const id = document.getElementById('enderecoId').value;
+            const formData = new FormData(event.target);
+            const endereco = Object.fromEntries(formData);
+
+            const response = await fetch(`${apiUrl}/atualizar/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(endereco),
+            });
+
+            if (response.ok) {
+                fetchEnderecos(); // Atualiza a lista de endereços
+                event.target.reset(); // Limpa o formulário
+                document.getElementById('enderecoId').value = ''; // Reseta o ID
+            } else {
+                alert('Erro ao atualizar endereço.');
+            }
+        }
+
+        // Carrega a lista de endereços quando a página é carregada
+        window.onload = fetchEnderecos;
+    </script>
+</head>
+<body>
+    <h1>Gerenciamento de Endereços</h1>
+
+    <h2>Criar/Atualizar Endereço</h2>
+    <form onsubmit="if (document.getElementById('enderecoId').value) { updateEndereco(event); } else { createEndereco(event); }">
+        <input type="hidden" id="enderecoId" value="">
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" name="cep" required><br>
+        <label for="logradouro">Logradouro:</label>
+        <input type="text" id="logradouro" name="logradouro" required><br>
+        <label for="numeroLocal">Número:</label>
+        <input type="text" id="numeroLocal" name="numeroLocal" required><br>
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" required><br>
+        <label for="uf">UF:</label>
+        <input type="text" id="uf" name="uf" required><br>
+        <label for="complemento">Complemento:</label>
+        <input type="text" id="complemento" name="complemento"><br>
+        <button type="submit">Salvar Endereço</button>
+    </form>
+
+    <h2>Lista de Endereços</h2>
+    <ul id="enderecoList"></ul>
+</body>
+</html>
+

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotações</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 8px 12px; border: 1px solid #ccc; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<h1>Cotações</h1>
+
+<h2>Listar Cotações</h2>
+<table id="cotacaoTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Largura</th>
+            <th>Comprimento</th>
+            <th>Altura</th>
+            <th>Material</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Criar Cotação</h2>
+<form id="cotacaoForm">
+    <input type="text" id="largura" placeholder="Largura" required>
+    <input type="text" id="comprimento" placeholder="Comprimento" required>
+    <input type="text" id="altura" placeholder="Altura" required>
+    <input type="text" id="material" placeholder="Material" required>
+    <input type="text" id="descricao" placeholder="Descrição" required>
+    <button type="submit">Criar</button>
+</form>
+
+<script>
+    const apiUrl = '/cotacoes/listar';
+
+    // Função para listar cotações
+    async function listarCotações() {
+        const response = await fetch(apiUrl);
+        const cotações = await response.json();
+        const tbody = document.querySelector('#cotacaoTable tbody');
+        tbody.innerHTML = ''; // Limpa a tabela
+        cotações.forEach(cotacao => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${cotacao.idCotacao}</td>
+                    <td>${cotacao.largura}</td>
+                    <td>${cotacao.comprimento}</td>
+                    <td>${cotacao.altura}</td>
+                    <td>${cotacao.material}</td>
+                    <td>${cotacao.descricao}</td>
+                    <td>
+                        <button onclick="editarCotacao(${cotacao.idCotacao})">Editar</button>
+                        <button onclick="deletarCotacao(${cotacao.idCotacao})">Remover</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // Função para criar uma nova cotação
+    document.getElementById('cotacaoForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Previne o comportamento padrão do formulário
+        const novaCotacao = {
+            largura: document.getElementById('largura').value,
+            comprimento: document.getElementById('comprimento').value,
+            altura: document.getElementById('altura').value,
+            material: document.getElementById('material').value,
+            descricao: document.getElementById('descricao').value
+        };
+
+        await fetch('/cotacoes/criar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaCotacao)
+        });
+
+        listarCotações(); // Atualiza a lista
+        document.getElementById('cotacaoForm').reset(); // Reseta o formulário
+    });
+
+    // Função para editar uma cotação
+    async function editarCotacao(id) {
+        const resposta = await fetch(`/cotacoes/buscar/${id}`);
+        const cotacao = await resposta.json();
+        // Aqui você pode popular um formulário com os dados da cotação
+        alert(`Editando: ${cotacao.descricao}`);
+        // Adicione lógica para editar a cotação conforme necessário
+    }
+
+    // Função para deletar uma cotação
+    async function deletarCotacao(id) {
+        await fetch(`/cotacoes/remover/${id}`, { method: 'DELETE' });
+        listarCotações(); // Atualiza a lista após deletar
+    }
+
+    // Chama a função para listar cotações ao carregar a página
+    listarCotações();
+</script>
+
+</body>
+</html>
