@@ -1,10 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Projetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
+    <h1>Gerenciamento de Projetos</h1>
 
+    <h2>Criar Projeto</h2>
+    <form id="createForm">
+        <input type="date" id="dataFinalizacao" placeholder="Data de Finalização" required>
+        <input type="text" id="imagem" placeholder="Imagem URL" required>
+        <select id="followup">
+            <option value="ABERTO">ABERTO</option>
+            <option value="VINTE_CINCO_PORCENTO">25%</option>
+            <option value="CINQUENTA_PORCENTO">50%</option>
+            <option value="SETENTA_CINCO_PORCENTO">75%</option>
+            <option value="CONCLUIDO">CONCLUIDO</option>
+            <!-- Adicione outras opções conforme necessário -->
+        </select>
+        <select id="statusprojeto">
+            <option value="NÃO_INICIADO">NÃO INICIADO</option>
+            <option value="ABERTO">EM ABERTO</option>
+            <option value="EM_ANDAMENTO">EM ANDAMENTO</option>
+            <option value="CONCLUIDO">CONCLUIDO</option>
+            <!-- Adicione outras opções conforme necessário -->
+        </select>
+        <button type="submit">Criar Projeto</button>
+    </form>
+
+    <h2>Projetos Cadastrados</h2>
+    <table id="projetosTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data de Finalização</th>
+                <th>Imagem</th>
+                <th>Follow Up</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Projetos serão preenchidos aqui -->
+        </tbody>
+    </table>
+
+    <script>
+        const apiUrl = 'http://localhost:8080/projeto'; // URL da sua API
+
+        document.getElementById('createForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            createProjeto();
+        });
+
+        function fetchProjetos() {
+            fetch(`${apiUrl}/listar`)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('tableBody');
+                    tableBody.innerHTML = ''; // Limpa a tabela
+                    data.forEach(projeto => {
+                        const row = `<tr>
+                            <td>${projeto.idProjeto}</td>
+                            <td>${projeto.dataFinalizacao}</td>
+                            <td><img src="${projeto.imagem}" alt="Imagem do Projeto" width="100"></td>
+                            <td>${projeto.followup}</td>
+                            <td>${projeto.statusprojeto}</td>
+                            <td>
+                                <button onclick="deleteProjeto(${projeto.idProjeto})">Remover</button>
+                            </td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error('Erro:', error));
+        }
+
+        function createProjeto() {
+            const dataFinalizacao = document.getElementById('dataFinalizacao').value;
+            const imagem = document.getElementById('imagem').value;
+            const followup = document.getElementById('followup').value;
+            const statusprojeto = document.getElementById('statusprojeto').value;
+
+            const projeto = {
+                dataFinalizacao: dataFinalizacao,
+                imagem: imagem,
+                followup: followup,
+                statusprojeto: statusprojeto
+            };
+
+            fetch(`${apiUrl}/criar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(projeto)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Projeto criado:', data);
+                fetchProjetos(); // Atualiza a lista
+                document.getElementById('createForm').reset(); // Limpa o formulário
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        function deleteProjeto(id) {
+            fetch(`${apiUrl}/remover/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Projeto removido com sucesso');
+                    fetchProjetos(); // Atualiza a lista
+                } else {
+                    console.error('Erro ao remover o projeto');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        // Carrega os projetos ao iniciar a página
+        window.onload = fetchProjetos;
+    </script>
 </body>
 </html>

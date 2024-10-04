@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Cotacao;
-import br.dev.onepiece.webpiece.repository.CotacaoRepository; // Certifique-se de que você tem um repositório para a entidade Cotacao
+import br.dev.onepiece.webpiece.repository.CotacaoRepository; // Certifique-se de ter um repositório para a entidade Cotacao
 
 @RestController
-
-@CrossOrigin(origins = "*")
-
-@RequestMapping("/cotacoes") // Caminho da API
+@CrossOrigin(origins = "*") // Permite requisições de qualquer origem, modifique conforme necessário
+@RequestMapping("/cotacao") // Caminho da API
 public class CotacaoController {
 
     @Autowired
@@ -78,3 +76,4 @@ public class CotacaoController {
         }
     }
 }
+

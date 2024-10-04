@@ -18,11 +18,11 @@ public class Cotacao {
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private Long idCotacao;
 	
-	private String largura;
+	private float largura;
 	
-	private String comprimento;
+	private float comprimento;
 	
-	private String altura;
+	private float altura;
 	
 	@Enumerated (EnumType.STRING)
 	private Material material;
@@ -41,27 +41,29 @@ public class Cotacao {
 		this.idCotacao = idCotacao;
 	}
 
-	public String getLargura() {
+	
+
+	public float getLargura() {
 		return largura;
 	}
 
-	public void setLargura(String largura) {
+	public void setLargura(float largura) {
 		this.largura = largura;
 	}
 
-	public String getComprimento() {
+	public float getComprimento() {
 		return comprimento;
 	}
 
-	public void setComprimento(String comprimento) {
+	public void setComprimento(float comprimento) {
 		this.comprimento = comprimento;
 	}
 
-	public String getAltura() {
+	public float getAltura() {
 		return altura;
 	}
 
-	public void setAltura(String altura) {
+	public void setAltura(float altura) {
 		this.altura = altura;
 	}
 
