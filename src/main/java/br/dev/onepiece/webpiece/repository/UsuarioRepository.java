@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import br.dev.onepiece.webpiece.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository <Usuario, Long>{
-	Optional<Usuario> findByEmail(String email);
+	
+	Optional<Usuario> findByUsernameOrEmail(String username, String email);
 	//Optional <Usuario> findbyUsername(String username);
+	//Optional<Usuario> findByEmail(String email);
 }

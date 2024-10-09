@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Usuario;
@@ -23,7 +25,34 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    
+    //login
+    
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder; // para verificar a senha
+    
 
+    // ... (outros métodos)
+
+    @PostMapping("/login")
+    public ResponseEntity<Usuario> login(@RequestParam String username, 
+                                         @RequestParam String email, 
+                                         @RequestParam String senha) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByUsernameOrEmail(username, email);
+
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            // Verifica se a senha está correta
+            if (passwordEncoder.matches(senha, usuario.getSenha())) {
+                return ResponseEntity.ok(usuario); // Retorna o usuário se a autenticação for bem-sucedida
+            } else {
+                return ResponseEntity.status(401).body(null); // Senha incorreta
+            }
+        } else {
+            return ResponseEntity.status(404).body(null); // Usuário não encontrado
+        }
+    }
     
     @GetMapping ("/listar")
     public List<Usuario> getAllUsuarios() {
@@ -38,6 +67,8 @@ public class UsuarioController {
 
     @PostMapping ("/criar")
     public Usuario createUsuario(@RequestBody Usuario usuario) {
+    	String encodedPassword = passwordEncoder.encode(usuario.getSenha());
+        usuario.setSenha(encodedPassword); // Define a senha codificada
         return usuarioRepository.save(usuario);
     }
 
@@ -46,8 +77,12 @@ public class UsuarioController {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if (usuario.isPresent()) {
             Usuario usuarioToUpdate = usuario.get();
+            
+            if (!usuarioDetails.getSenha().equals(usuarioToUpdate.getSenha())) {
+                String encodedPassword = passwordEncoder.encode(usuarioDetails.getSenha());
+                usuarioToUpdate.setSenha(encodedPassword);
+            }
             usuarioToUpdate.setUsername(usuarioDetails.getUsername());
-            usuarioToUpdate.setSenha(usuarioDetails.getSenha());
             usuarioToUpdate.setEmail(usuarioDetails.getEmail());
             usuarioToUpdate.setNome(usuarioDetails.getNome());
             usuarioToUpdate.setCpf_cnpj(usuarioDetails.getCpf_cnpj());
@@ -59,6 +94,7 @@ public class UsuarioController {
             usuarioToUpdate.setDescricaoPerfil(usuarioDetails.getDescricaoPerfil());
             usuarioToUpdate.setFotoPerfil(usuarioDetails.getFotoPerfil());
             Usuario updatedUsuario = usuarioRepository.save(usuarioToUpdate);
+            
             return ResponseEntity.ok(updatedUsuario);
         } else {
             return ResponseEntity.notFound().build();
