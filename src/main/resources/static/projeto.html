@@ -5,141 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento de Projetos</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     </style>
 </head>
 <body>
     <h1>Gerenciamento de Projetos</h1>
 
-    <h2>Criar Projeto</h2>
-    <form id="createForm">
-        <input type="date" id="dataFinalizacao" placeholder="Data de Finalização" required>
-        <input type="text" id="imagem" placeholder="Imagem URL" required>
-        <select id="followup">
-            <option value="ABERTO">ABERTO</option>
-            <option value="VINTE_CINCO_PORCENTO">25%</option>
-            <option value="CINQUENTA_PORCENTO">50%</option>
-            <option value="SETENTA_CINCO_PORCENTO">75%</option>
-            <option value="CONCLUIDO">CONCLUIDO</option>
-            <!-- Adicione outras opções conforme necessário -->
-        </select>
-        <select id="statusprojeto">
-            <option value="NÃO_INICIADO">NÃO INICIADO</option>
-            <option value="ABERTO">EM ABERTO</option>
-            <option value="EM_ANDAMENTO">EM ANDAMENTO</option>
-            <option value="CONCLUIDO">CONCLUIDO</option>
-            <!-- Adicione outras opções conforme necessário -->
-        </select>
-        <button type="submit">Criar Projeto</button>
-    </form>
-
-    <h2>Projetos Cadastrados</h2>
-    <table id="projetosTable">
+    <h2>Lista de Projetos</h2>
+    <table id="projetos-table">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Data de Finalização</th>
-                <th>Imagem</th>
-                <th>Follow Up</th>
-                <th>Status</th>
+                <th>Descrição</th>
                 <th>Ações</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
-            <!-- Projetos serão preenchidos aqui -->
-        </tbody>
+        <tbody></tbody>
     </table>
 
+    <h2>Criar Projeto</h2>
+    <form id="create-project-form">
+        <input type="text" id="descricao" placeholder="Descrição" required>
+        <input type="text" id="largura" placeholder="Largura" required>
+        <input type="text" id="dataFinalizacao" placeholder="Data Finalização" required>
+        <button type="submit">Criar</button>
+    </form>
+
+    <h2>Atualizar Projeto</h2>
+    <form id="update-project-form">
+        <input type="number" id="update-id" placeholder="ID do Projeto" required>
+        <input type="text" id="update-descricao" placeholder="Nova Descrição" required>
+        <input type="text" id="largura" placeholder="Nova Largura" required>
+        <input type="text" id="dataFinalizacao" placeholder="Nova Data Finalização" required>
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <h2>Remover Projeto</h2>
+    <form id="delete-project-form">
+        <input type="number" id="delete-id" placeholder="ID do Projeto" required>
+        <button type="submit">Remover</button>
+    </form>
+
     <script>
-        const apiUrl = 'http://localhost:8080/projeto'; // URL da sua API
+        const apiUrl = 'http://localhost:8080/projetos'; // Altere a porta se necessário
 
-        document.getElementById('createForm').addEventListener('submit', function(event) {
+        async function fetchProjetos() {
+            const response = await fetch(`${apiUrl}/listar`);
+            const projetos = await response.json();
+            const tbody = document.querySelector('#projetos-table tbody');
+            tbody.innerHTML = '';
+
+            projetos.forEach(projeto => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${projeto.id}</td>
+                    <td>${projeto.descricao}</td>
+                    <td>
+                        <button onclick="populateUpdateForm(${projeto.id}, '${projeto.descricao}')">Editar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function createProjeto(event) {
             event.preventDefault();
-            createProjeto();
-        });
-
-        function fetchProjetos() {
-            fetch(`${apiUrl}/listar`)
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.getElementById('tableBody');
-                    tableBody.innerHTML = ''; // Limpa a tabela
-                    data.forEach(projeto => {
-                        const row = `<tr>
-                            <td>${projeto.idProjeto}</td>
-                            <td>${projeto.dataFinalizacao}</td>
-                            <td><img src="${projeto.imagem}" alt="Imagem do Projeto" width="100"></td>
-                            <td>${projeto.followup}</td>
-                            <td>${projeto.statusprojeto}</td>
-                            <td>
-                                <button onclick="deleteProjeto(${projeto.idProjeto})">Remover</button>
-                            </td>
-                        </tr>`;
-                        tableBody.innerHTML += row;
-                    });
-                })
-                .catch(error => console.error('Erro:', error));
-        }
-
-        function createProjeto() {
-            const dataFinalizacao = document.getElementById('dataFinalizacao').value;
-            const imagem = document.getElementById('imagem').value;
-            const followup = document.getElementById('followup').value;
-            const statusprojeto = document.getElementById('statusprojeto').value;
-
-            const projeto = {
-                dataFinalizacao: dataFinalizacao,
-                imagem: imagem,
-                followup: followup,
-                statusprojeto: statusprojeto
-            };
-
-            fetch(`${apiUrl}/criar`, {
+            const descricao = document.querySelector('#descricao').value;
+            await fetch(`${apiUrl}/criar`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(projeto)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Projeto criado:', data);
-                fetchProjetos(); // Atualiza a lista
-                document.getElementById('createForm').reset(); // Limpa o formulário
-            })
-            .catch(error => console.error('Erro:', error));
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descricao })
+            });
+            fetchProjetos();
         }
 
-        function deleteProjeto(id) {
-            fetch(`${apiUrl}/remover/${id}`, {
+        async function updateProjeto(event) {
+            event.preventDefault();
+            const id = document.querySelector('#update-id').value;
+            const descricao = document.querySelector('#update-descricao').value;
+            await fetch(`${apiUrl}/atualizar/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ descricao })
+            });
+            fetchProjetos();
+        }
+
+        async function deleteProjeto(event) {
+            event.preventDefault();
+            const id = document.querySelector('#delete-id').value;
+            await fetch(`${apiUrl}/remover/${id}`, {
                 method: 'DELETE'
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Projeto removido com sucesso');
-                    fetchProjetos(); // Atualiza a lista
-                } else {
-                    console.error('Erro ao remover o projeto');
-                }
-            })
-            .catch(error => console.error('Erro:', error));
+            });
+            fetchProjetos();
         }
 
-        // Carrega os projetos ao iniciar a página
-        window.onload = fetchProjetos;
+        function populateUpdateForm(id, descricao) {
+            document.querySelector('#update-id').value = id;
+            document.querySelector('#update-descricao').value = descricao;
+        }
+
+        document.getElementById('create-project-form').addEventListener('submit', createProjeto);
+        document.getElementById('update-project-form').addEventListener('submit', updateProjeto);
+        document.getElementById('delete-project-form').addEventListener('submit', deleteProjeto);
+
+        // Carregar projetos ao iniciar
+        fetchProjetos();
     </script>
 </body>
 </html>

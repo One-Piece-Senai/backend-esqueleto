@@ -3,139 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Orçamentos</title>
-    <script>
-        const apiUrl = 'http://localhost:8080/orcamentos'; // URL da API
-
-        // Função para listar todos os orçamentos
-        function listarOrcamentos() {
-            fetch(`${apiUrl}/listar`)
-                .then(response => response.json())
-                .then(data => {
-                    const tabela = document.getElementById('orcamentosTabela');
-                    tabela.innerHTML = '';
-                    data.forEach(orcamento => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${orcamento.idOrcamento}</td>
-                            <td>${orcamento.valor}</td>
-                            <td>${orcamento.dataEntrega}</td>
-                            <td>${orcamento.status}</td>
-                            <td>
-                                <button onclick="buscarOrcamento(${orcamento.idOrcamento})">Editar</button>
-                                <button onclick="removerOrcamento(${orcamento.idOrcamento})">Remover</button>
-                            </td>
-                        `;
-                        tabela.appendChild(row);
-                    });
-                });
-        }
-
-        // Função para criar um novo orçamento
-        function criarOrcamento() {
-            const valor = document.getElementById('valor').value;
-            const dataEntrega = document.getElementById('dataEntrega').value;
-            const status = document.getElementById('status').value;
-
-            const novoOrcamento = { valor, dataEntrega, status };
-
-            fetch(`${apiUrl}/criar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(novoOrcamento),
-            })
-            .then(response => response.json())
-            .then(() => {
-                listarOrcamentos();
-                limparCampos();
-            });
-        }
-
-        // Função para buscar um orçamento por ID
-        function buscarOrcamento(id) {
-            fetch(`${apiUrl}/buscar/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('idOrcamento').value = data.idOrcamento;
-                    document.getElementById('valor').value = data.valor;
-                    document.getElementById('dataEntrega').value = data.dataEntrega;
-                    document.getElementById('status').value = data.status;
-                });
-        }
-
-        // Função para atualizar um orçamento existente
-        function atualizarOrcamento() {
-            const id = document.getElementById('idOrcamento').value;
-            const valor = document.getElementById('valor').value;
-            const dataEntrega = document.getElementById('dataEntrega').value;
-            const status = document.getElementById('status').value;
-
-            const orcamentoAtualizado = { valor, dataEntrega, status };
-
-            fetch(`${apiUrl}/atualizar/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orcamentoAtualizado),
-            })
-            .then(response => response.json())
-            .then(() => {
-                listarOrcamentos();
-                limparCampos();
-            });
-        }
-
-        // Função para remover um orçamento
-        function removerOrcamento(id) {
-            fetch(`${apiUrl}/remover/${id}`, {
-                method: 'DELETE',
-            })
-            .then(() => {
-                listarOrcamentos();
-            });
-        }
-
-        // Função para limpar os campos do formulário
-        function limparCampos() {
-            document.getElementById('idOrcamento').value = '';
-            document.getElementById('valor').value = '';
-            document.getElementById('dataEntrega').value = '';
-            document.getElementById('status').value = '';
-        }
-
-        // Ao carregar a página, listar os orçamentos
-        window.onload = listarOrcamentos;
-    </script>
+    <title>Orçamentos</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
-    <h1>Gerenciamento de Orçamentos</h1>
-    
-    <h2>Criar/Atualizar Orçamento</h2>
-    <input type="hidden" id="idOrcamento">
-    <label for="valor">Valor:</label>
-    <input type="number" id="valor" required>
-    <label for="dataEntrega">Data de Entrega:</label>
-    <input type="date" id="dataEntrega" required>
-    <label for="status">Status:</label>
-    <input type="text" id="status" required>
-    <button onclick="criarOrcamento()">Criar</button>
-    <button onclick="atualizarOrcamento()">Atualizar</button>
-    
-    <h2>Lista de Orçamentos</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Valor</th>
-                <th>Data de Entrega</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="orcamentosTabela"></tbody>
-    </table>
+
+<h1>Gerenciador de Orçamentos</h1>
+
+<h2>Listar Orçamentos</h2>
+<button onclick="listarOrcamentos()">Listar</button>
+<table id="orcamentosTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Data de Entrega</th>
+            <th>Valor</th>
+            <th>Forma de Pagamento</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Criar Orçamento</h2>
+<form id="orcamentoForm" onsubmit="criarOrcamento(event)">
+    <label>Data de Entrega: <input type="date" id="dataEntrega" required></label><br>
+    <label>Valor: <input type="number" id="valor" required></label><br>
+    <label>Forma de Pagamento: <input type="text" id="formaPagamento" required></label><br>
+    <label>Status: <input type="text" id="status" required></label><br>
+    <button type="submit">Criar</button>
+</form>
+
+<script>
+    const apiUrl = 'http://localhost:8080/orcamentos'; // URL da sua API
+
+    function listarOrcamentos() {
+        fetch(`${apiUrl}/listar`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#orcamentosTable tbody');
+                tableBody.innerHTML = '';
+                data.forEach(orcamento => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${orcamento.id}</td>
+                        <td>${orcamento.dataEntrega}</td>
+                        <td>${orcamento.valor}</td>
+                        <td>${orcamento.formaPagamento}</td>
+                        <td>${orcamento.status}</td>
+                        <td>
+                            <button onclick="editarOrcamento(${orcamento.id})">Editar</button>
+                            <button onclick="removerOrcamento(${orcamento.id})">Remover</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Erro:', error));
+    }
+
+    function criarOrcamento(event) {
+        event.preventDefault();
+        const orcamento = {
+            dataEntrega: document.getElementById('dataEntrega').value,
+            valor: document.getElementById('valor').value,
+            formaPagamento: document.getElementById('formaPagamento').value,
+            status: document.getElementById('status').value
+        };
+
+        fetch(`${apiUrl}/criar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orcamento)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Orçamento criado:', data);
+            listarOrcamentos(); // Atualiza a lista
+        })
+        .catch(error => console.error('Erro:', error));
+    }
+
+    function removerOrcamento(id) {
+        fetch(`${apiUrl}/remover/${id}`, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Orçamento removido');
+                    listarOrcamentos(); // Atualiza a lista
+                } else {
+                    console.error('Erro ao remover o orçamento');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+    }
+
+    function editarOrcamento(id) {
+        const novoStatus = prompt('Digite o novo status:');
+        const valor = prompt('Digite o novo valor:');
+        const formaPagamento = prompt('Digite a nova forma de pagamento:');
+        const dataEntrega = prompt('Digite a nova data de entrega:');
+        
+        const orcamento = {
+            dataEntrega: dataEntrega,
+            valor: valor,
+            formaPagamento: formaPagamento,
+            status: novoStatus
+        };
+
+        fetch(`${apiUrl}/atualizar/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orcamento)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Orçamento atualizado');
+                listarOrcamentos(); // Atualiza a lista
+            } else {
+                console.error('Erro ao atualizar o orçamento');
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+    }
+</script>
+
 </body>
 </html>

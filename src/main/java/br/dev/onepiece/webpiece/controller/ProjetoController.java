@@ -20,7 +20,7 @@ import br.dev.onepiece.webpiece.repository.ProjetoRepository;
 
 @RestController
 @CrossOrigin(origins = "*") // Permite requisições de qualquer origem
-@RequestMapping("/projeto") // Caminho da API
+@RequestMapping("/projetos") // Caminho da API
 public class ProjetoController {
 
     @Autowired
@@ -55,6 +55,15 @@ public class ProjetoController {
             projetoToUpdate.setImagem(projetoDetails.getImagem());
             projetoToUpdate.setFollowup(projetoDetails.getFollowup());
             projetoToUpdate.setStatusprojeto(projetoDetails.getStatusprojeto());
+            projetoToUpdate.setLargura(projetoDetails.getLargura());
+            projetoToUpdate.setComprimento(projetoDetails.getComprimento());
+            projetoToUpdate.setAltura(projetoDetails.getAltura());
+            projetoToUpdate.setMaterial(projetoDetails.getMaterial());
+            projetoToUpdate.setDescricao(projetoDetails.getDescricao());
+            projetoToUpdate.setCaminhoArquivo(projetoDetails.getCaminhoArquivo());
+            
+            
+            
             Projeto updatedProjeto = projetoRepository.save(projetoToUpdate);
             return ResponseEntity.ok(updatedProjeto);
         } else {

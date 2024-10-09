@@ -1,6 +1,6 @@
 package br.dev.onepiece.webpiece.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
 import jakarta.persistence.Entity;
@@ -9,27 +9,34 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
-
 public class Orcamento {
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	private Long idOrcamento;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
 	private float valor;
-	
-	private Date dataEntrega;
-	
-	@Enumerated (EnumType.STRING)
+
+	private LocalDate dataEntrega;
+
+	private String formaPagamento;
+
+	@Enumerated(EnumType.STRING)
 	private StatusOrcamentos status;
 
-	public Long getIdOrcamento() {
-		return idOrcamento;
+	@ManyToOne
+	@JoinColumn(name = "idProjeto")
+	private Projeto projeto;
+
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdOrcamento(Long idOrcamento) {
-		this.idOrcamento = idOrcamento;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public float getValor() {
@@ -40,12 +47,20 @@ public class Orcamento {
 		this.valor = valor;
 	}
 
-	public Date getDataEntrega() {
+	public LocalDate getDataEntrega() {
 		return dataEntrega;
 	}
 
-	public void setDataEntrega(Date dataEntrega) {
+	public void setDataEntrega(LocalDate dataEntrega) {
 		this.dataEntrega = dataEntrega;
+	}
+
+	public String getFormaPagamento() {
+		return formaPagamento;
+	}
+
+	public void setFormaPagamento(String formaPagamento) {
+		this.formaPagamento = formaPagamento;
 	}
 
 	public StatusOrcamentos getStatus() {
@@ -55,10 +70,14 @@ public class Orcamento {
 	public void setStatus(StatusOrcamentos status) {
 		this.status = status;
 	}
-	
-	
-	
-	
-	
 
+	public Projeto getProjeto() {
+		return projeto;
+	}
+
+	public void setProjeto(Projeto projeto) {
+		this.projeto = projeto;
+	}
+	
+	
 }

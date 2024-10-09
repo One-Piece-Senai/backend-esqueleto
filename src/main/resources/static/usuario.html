@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Usuários</title>
+    <script>
+        const apiUrl = 'http://localhost:8080/usuarios';
+
+        async function listarUsuarios() {
+            const response = await fetch(`${apiUrl}/listar`);
+            const usuarios = await response.json();
+            const usuarioList = document.getElementById('usuarioList');
+            usuarioList.innerHTML = '';
+            usuarios.forEach(usuario => {
+                usuarioList.innerHTML += `<li>${usuario.nome} - ${usuario.email} <button onclick="buscarUsuario(${usuario.id})">Editar</button> <button onclick="removerUsuario(${usuario.id})">Remover</button></li>`;
+            });
+        }
+
+        async function criarUsuario() {
+            const usuario = {
+                username: document.getElementById('username').value,
+                senha: document.getElementById('senha').value,
+                email: document.getElementById('email').value,
+                nome: document.getElementById('nome').value,
+                cpf_cnpj: document.getElementById('cpf_cnpj').value,
+                telefone: document.getElementById('telefone').value,
+                tipo: document.getElementById('tipo').value,
+                cep: document.getElementById('cep').value,
+                endereco: document.getElementById('endereco').value,
+                numero: document.getElementById('numero').value,
+                descricaoPerfil: document.getElementById('descricaoPerfil').value,
+                fotoPerfil: document.getElementById('fotoPerfil').value
+            };
+            await fetch(`${apiUrl}/criar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            });
+            listarUsuarios();
+        }
+
+        async function buscarUsuario(id) {
+            const response = await fetch(`${apiUrl}/buscar/${id}`);
+            const usuario = await response.json();
+            if (usuario) {
+                document.getElementById('username').value = usuario.username;
+                document.getElementById('senha').value = usuario.senha;
+                document.getElementById('email').value = usuario.email;
+                document.getElementById('nome').value = usuario.nome;
+                document.getElementById('cpf_cnpj').value = usuario.cpf_cnpj;
+                document.getElementById('telefone').value = usuario.telefone;
+                document.getElementById('tipo').value = usuario.tipo;
+                document.getElementById('cep').value = usuario.cep;
+                document.getElementById('endereco').value = usuario.endereco;
+                document.getElementById('numero').value = usuario.numero;
+                document.getElementById('descricaoPerfil').value = usuario.descricaoPerfil;
+                document.getElementById('fotoPerfil').value = usuario.fotoPerfil;
+                document.getElementById('updateButton').onclick = () => atualizarUsuario(id);
+            }
+        }
+
+        async function atualizarUsuario(id) {
+            const usuario = {
+                username: document.getElementById('username').value,
+                senha: document.getElementById('senha').value,
+                email: document.getElementById('email').value,
+                nome: document.getElementById('nome').value,
+                cpf_cnpj: document.getElementById('cpf_cnpj').value,
+                telefone: document.getElementById('telefone').value,
+                tipo: document.getElementById('tipo').value,
+                cep: document.getElementById('cep').value,
+                endereco: document.getElementById('endereco').value,
+                numero: document.getElementById('numero').value,
+                descricaoPerfil: document.getElementById('descricaoPerfil').value,
+                fotoPerfil: document.getElementById('fotoPerfil').value
+            };
+            await fetch(`${apiUrl}/atualizar/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario)
+            });
+            listarUsuarios();
+        }
+
+        async function removerUsuario(id) {
+            await fetch(`${apiUrl}/remover/${id}`, { method: 'DELETE' });
+            listarUsuarios();
+        }
+
+        window.onload = listarUsuarios;
+    </script>
+</head>
+<body>
+    <h1>Gerenciar Usuários</h1>
+    <div>
+        <h2>Criar/Atualizar Usuário</h2>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="senha" placeholder="Senha" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="nome" placeholder="Nome" required>
+        <input type="text" id="cpf_cnpj" placeholder="CPF/CNPJ" required>
+        <input type="text" id="telefone" placeholder="Telefone" required>
+        <input type="text" id="tipo" placeholder="Tipo" required>
+        <input type="text" id="cep" placeholder="CEP" required>
+        <input type="text" id="endereco" placeholder="Endereço" required>
+        <input type="text" id="numero" placeholder="Número" required>
+        <input type="text" id="descricaoPerfil" placeholder="Descrição do Perfil" required>
+        <input type="text" id="fotoPerfil" placeholder="Foto do Perfil" required>
+        <button onclick="criarUsuario()">Criar</button>
+        <button id="updateButton">Atualizar</button>
+    </div>
+    <h2>Lista de Usuários</h2>
+    <ul id="usuarioList"></ul>
+</body>
+</html>

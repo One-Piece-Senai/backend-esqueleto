@@ -1,47 +1,107 @@
 package br.dev.onepiece.webpiece.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 import br.dev.onepiece.webpiece.enums.FollowUp;
+import br.dev.onepiece.webpiece.enums.Material;
 import br.dev.onepiece.webpiece.enums.StatusProjeto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 
 public class Projeto {
-	
+
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	private Long idProjeto;
-	
-	private Date dataFinalizacao;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	private float largura;
+
+	private float comprimento;
+
+	private float altura;
+
+	private String descricao;
+
+	private String caminhoArquivo;
+
+	private LocalDate dataFinalizacao;
+
 	private String imagem;
-	
-	@Enumerated (EnumType.STRING)
+
+	@Enumerated(EnumType.STRING)
+	private Material material;
+
+	@Enumerated(EnumType.STRING)
 	private FollowUp followup;
-	
-	@Enumerated (EnumType.STRING)
+
+	@Enumerated(EnumType.STRING)
 	private StatusProjeto statusprojeto;
 
-	public Long getIdProjeto() {
-		return idProjeto;
+	@ManyToOne
+	@JoinColumn(name = "idUsuario")
+	private Usuario usuario;
+	
+	//private List<Orcamento> orcamentos;
+
+	//public Projeto() {}
+	
+	// Get Set--------------------------
+	
+	public Long getId() {
+		return id;
 	}
 
-	public void setIdProjeto(Long idProjeto) {
-		this.idProjeto = idProjeto;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public Date getDataFinalizacao() {
+	public float getLargura() {
+		return largura;
+	}
+
+	public void setLargura(float largura) {
+		this.largura = largura;
+	}
+
+	public float getComprimento() {
+		return comprimento;
+	}
+
+	public void setComprimento(float comprimento) {
+		this.comprimento = comprimento;
+	}
+
+	public float getAltura() {
+		return altura;
+	}
+
+	public void setAltura(float altura) {
+		this.altura = altura;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public String getCaminhoArquivo() {
+		return caminhoArquivo;
+	}
+
+	public void setCaminhoArquivo(String caminhoArquivo) {
+		this.caminhoArquivo = caminhoArquivo;
+	}
+
+	public LocalDate getDataFinalizacao() {
 		return dataFinalizacao;
 	}
 
-	public void setDataFinalizacao(Date dataFinalizacao) {
+	public void setDataFinalizacao(LocalDate dataFinalizacao) {
 		this.dataFinalizacao = dataFinalizacao;
 	}
 
@@ -51,6 +111,14 @@ public class Projeto {
 
 	public void setImagem(String imagem) {
 		this.imagem = imagem;
+	}
+
+	public Material getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(Material material) {
+		this.material = material;
 	}
 
 	public FollowUp getFollowup() {
@@ -68,6 +136,24 @@ public class Projeto {
 	public void setStatusprojeto(StatusProjeto statusprojeto) {
 		this.statusprojeto = statusprojeto;
 	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	/*
+	public List<Orcamento> getOrcamentos() {
+		return orcamentos;
+	}
+
+	public void setOrcamentos(List<Orcamento> orcamentos) {
+		this.orcamentos = orcamentos;
+	}	
+*/
 	
 	
 	

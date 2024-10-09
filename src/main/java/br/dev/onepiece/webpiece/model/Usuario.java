@@ -1,5 +1,7 @@
 package br.dev.onepiece.webpiece.model;
 
+import java.util.List;
+
 import br.dev.onepiece.webpiece.enums.TipoUsuario;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,39 +9,53 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 
 public class Usuario {
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
-	private Long idUser;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
 	private String username;
-	
+
 	private String senha;
-	
+
 	private String email;
-	
+
 	private String nome;
-	
+
 	private String cpf_cnpj;
-	
+
 	private String telefone;
-	
-	@Enumerated (EnumType.STRING)
-	private TipoUsuario tipo;
-	
+
+	private String cep;
+
+	private String endereco;
+
+	private String numero;
+
 	private String descricaoPerfil;
-	
+
 	private String fotoPerfil;
 
-	public Long getIdUser() {
-		return idUser;
+	@Enumerated(EnumType.STRING)
+	private TipoUsuario tipo;
+
+	//@OneToMany
+	//private List<Projeto> projetos;
+
+	public Usuario() {
 	}
 
-	public void setIdUser(Long idUser) {
-		this.idUser = idUser;
+	// Get Set--------------------------
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
@@ -90,12 +106,28 @@ public class Usuario {
 		this.telefone = telefone;
 	}
 
-	public TipoUsuario getTipo() {
-		return tipo;
+	public String getCep() {
+		return cep;
 	}
 
-	public void setTipo(TipoUsuario tipo) {
-		this.tipo = tipo;
+	public void setCep(String cep) {
+		this.cep = cep;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public String getNumero() {
+		return numero;
+	}
+
+	public void setNumero(String numero) {
+		this.numero = numero;
 	}
 
 	public String getDescricaoPerfil() {
@@ -113,6 +145,23 @@ public class Usuario {
 	public void setFotoPerfil(String fotoPerfil) {
 		this.fotoPerfil = fotoPerfil;
 	}
+
+	public TipoUsuario getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoUsuario tipo) {
+		this.tipo = tipo;
+	}
+
+	//public List<Projeto> getProjetos() {
+	//	return projetos;
+	//}
+
+	//hpublic void setProjetos(List<Projeto> projetos) {
+	//	this.projetos = projetos;
+	//}	
+	
 	
 	
 
