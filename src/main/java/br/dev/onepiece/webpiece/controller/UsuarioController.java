@@ -13,46 +13,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository; // Certifique-se de que você tem um repositório para a entidade Usuario
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/usuario")
 public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
     
-    
-    //login
-    
     @Autowired
     private BCryptPasswordEncoder passwordEncoder; // para verificar a senha
-    
-
-    // ... (outros métodos)
-
-    @PostMapping("/login")
-    public ResponseEntity<Usuario> login(@RequestParam String username, 
-                                         @RequestParam String email, 
-                                         @RequestParam String senha) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByUsernameOrEmail(username, email);
-
-        if (usuarioOpt.isPresent()) {
-            Usuario usuario = usuarioOpt.get();
-            // Verifica se a senha está correta
-            if (passwordEncoder.matches(senha, usuario.getSenha())) {
-                return ResponseEntity.ok(usuario); // Retorna o usuário se a autenticação for bem-sucedida
-            } else {
-                return ResponseEntity.status(401).body(null); // Senha incorreta
-            }
-        } else {
-            return ResponseEntity.status(404).body(null); // Usuário não encontrado
-        }
-    }
     
     @GetMapping ("/listar")
     public List<Usuario> getAllUsuarios() {
