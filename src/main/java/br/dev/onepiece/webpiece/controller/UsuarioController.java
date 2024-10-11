@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +24,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
     
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder; // para verificar a senha
+    //@Autowired
+    //private BCryptPasswordEncoder passwordEncoder; // para verificar a senha
     
     @GetMapping ("/listar")
     public List<Usuario> getAllUsuarios() {
@@ -41,7 +40,7 @@ public class UsuarioController {
 
     @PostMapping ("/criar")
     public Usuario createUsuario(@RequestBody Usuario usuario) {
-    	String encodedPassword = passwordEncoder.encode(usuario.getSenha());
+    	String encodedPassword = usuario.getSenha();
         usuario.setSenha(encodedPassword); // Define a senha codificada
         return usuarioRepository.save(usuario);
     }
@@ -53,7 +52,7 @@ public class UsuarioController {
             Usuario usuarioToUpdate = usuario.get();
             
             if (!usuarioDetails.getSenha().equals(usuarioToUpdate.getSenha())) {
-                String encodedPassword = passwordEncoder.encode(usuarioDetails.getSenha());
+                String encodedPassword = usuarioDetails.getSenha();
                 usuarioToUpdate.setSenha(encodedPassword);
             }
             usuarioToUpdate.setUsername(usuarioDetails.getUsername());

@@ -4,6 +4,7 @@ import br.dev.onepiece.webpiece.enums.TipoUsuario;
 
 public class LoginDTO {
 
+	private Long id;
 	private String email;
 	private String password;
 	private TipoUsuario tipoUser;
@@ -30,6 +31,14 @@ public class LoginDTO {
 
 	public void setTipoUser(TipoUsuario tipoUser) {
 		this.tipoUser = tipoUser;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	

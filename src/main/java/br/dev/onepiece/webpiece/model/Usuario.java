@@ -43,8 +43,8 @@ public class Usuario {
 	@Enumerated(EnumType.STRING)
 	private TipoUsuario tipo;
 
-	//@OneToMany
-	//private List<Projeto> projetos;
+	@OneToMany
+	private List<Projeto> projetos;
 
 	public Usuario() {
 	}
@@ -154,13 +154,13 @@ public class Usuario {
 		this.tipo = tipo;
 	}
 
-	//public List<Projeto> getProjetos() {
-	//	return projetos;
-	//}
+	public List<Projeto> getProjetos() {
+		return projetos;
+	}
 
-	//hpublic void setProjetos(List<Projeto> projetos) {
-	//	this.projetos = projetos;
-	//}	
+	public void setProjetos(List<Projeto> projetos) {
+		this.projetos = projetos;
+	}	
 	
 	
 	

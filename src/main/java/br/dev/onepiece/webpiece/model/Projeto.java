@@ -43,7 +43,8 @@ public class Projeto {
 	@JoinColumn(name = "idUsuario")
 	private Usuario usuario;
 	
-	//private List<Orcamento> orcamentos;
+	@OneToMany
+	private List<Orcamento> orcamentos;
 
 	//public Projeto() {}
 	
@@ -145,7 +146,6 @@ public class Projeto {
 		this.usuario = usuario;
 	}
 
-	/*
 	public List<Orcamento> getOrcamentos() {
 		return orcamentos;
 	}
@@ -153,7 +153,7 @@ public class Projeto {
 	public void setOrcamentos(List<Orcamento> orcamentos) {
 		this.orcamentos = orcamentos;
 	}	
-*/
+
 	
 	
 	

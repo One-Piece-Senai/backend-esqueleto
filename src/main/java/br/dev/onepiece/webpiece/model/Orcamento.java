@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Orcamento {
@@ -30,6 +31,10 @@ public class Orcamento {
 	@ManyToOne
 	@JoinColumn(name = "idProjeto")
 	private Projeto projeto;
+	
+	@OneToOne
+	@JoinColumn(name = "idUsuario")
+	private Usuario usuario;	
 
 	public Long getId() {
 		return id;
@@ -77,6 +82,14 @@ public class Orcamento {
 
 	public void setProjeto(Projeto projeto) {
 		this.projeto = projeto;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 	
 	
