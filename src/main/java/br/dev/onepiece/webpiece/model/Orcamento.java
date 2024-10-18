@@ -1,6 +1,9 @@
 package br.dev.onepiece.webpiece.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
 import jakarta.persistence.Entity;
@@ -12,9 +15,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.transaction.Transactional;
 
 @Entity
-public class Orcamento {
+@Transactional
+public class Orcamento implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -30,10 +35,12 @@ public class Orcamento {
 
 	@ManyToOne
 	@JoinColumn(name = "idProjeto")
+	@JsonBackReference
 	private Projeto projeto;
 	
 	@OneToOne
 	@JoinColumn(name = "idUsuario")
+	//@JsonBackReference
 	private Usuario usuario;	
 
 	public Long getId() {
@@ -91,6 +98,7 @@ public class Orcamento {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	
+
+
 	
 }

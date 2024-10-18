@@ -1,16 +1,21 @@
 package br.dev.onepiece.webpiece.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.dev.onepiece.webpiece.enums.FollowUp;
 import br.dev.onepiece.webpiece.enums.Material;
 import br.dev.onepiece.webpiece.enums.StatusProjeto;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 
 @Entity
-
-public class Projeto {
+@Transactional
+public class Projeto implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,9 +46,11 @@ public class Projeto {
 
 	@ManyToOne
 	@JoinColumn(name = "idUsuario")
+	@JsonBackReference
 	private Usuario usuario;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "projeto", fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private List<Orcamento> orcamentos;
 
 	//public Projeto() {}
