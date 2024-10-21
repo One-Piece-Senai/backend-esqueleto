@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
 import jakarta.persistence.Entity;
@@ -15,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.transaction.Transactional;
 
 @Entity
@@ -35,16 +33,14 @@ public class Orcamento implements Serializable {
 	private StatusOrcamentos status;
 
 	@ManyToOne
-	@JsonIgnore
 	@JoinColumn(name = "idProjeto")
 	@JsonBackReference
 	private Projeto projeto;
 	
-	@OneToOne
-	@JsonIgnore
-	@JoinColumn(name = "idUsuario")
+	//@OneToOne
+	//@JoinColumn(name = "idUsuario")
 	//@JsonBackReference
-	private Usuario usuario;	
+	//private Usuario usuario;	
 
 	public Long getId() {
 		return id;
@@ -92,14 +88,6 @@ public class Orcamento implements Serializable {
 
 	public void setProjeto(Projeto projeto) {
 		this.projeto = projeto;
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
 	}
 
 
