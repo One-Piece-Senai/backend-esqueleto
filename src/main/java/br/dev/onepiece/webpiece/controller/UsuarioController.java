@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Usuario;
-import br.dev.onepiece.webpiece.repository.UsuarioRepository; // Certifique-se de que você tem um repositório para a entidade Usuario
+import br.dev.onepiece.webpiece.repository.UsuarioRepository;
+import br.dev.onepiece.webpiece.utils.ValidadorCpfCnpj; // Importando a classe utilitária
 
 @RestController
 @RequestMapping("/usuario")
@@ -23,11 +24,8 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    
-    //@Autowired
-    //private BCryptPasswordEncoder passwordEncoder; // para verificar a senha
-    
-    @GetMapping ("/listar")
+
+    @GetMapping("/listar")
     public List<Usuario> getAllUsuarios() {
         return usuarioRepository.findAll();
     }
@@ -38,23 +36,59 @@ public class UsuarioController {
         return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping ("/criar")
-    public Usuario createUsuario(@RequestBody Usuario usuario) {
-    	String encodedPassword = usuario.getSenha();
+    @PostMapping("/criar")
+    public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario) {
+        String cpfCnpj = usuario.getCpf_cnpj();
+
+        // Validação para CPF (11 dígitos) ou CNPJ (14 dígitos)
+        if (cpfCnpj.length() == 11) {
+            if (!ValidadorCpfCnpj.isCpf(cpfCnpj)) {
+                return ResponseEntity.badRequest().body("CPF inválido.");
+            }
+        } else if (cpfCnpj.length() == 14) {
+            if (!ValidadorCpfCnpj.isCnpj(cpfCnpj)) {
+                return ResponseEntity.badRequest().body("CNPJ inválido.");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("O número informado não é um CPF nem um CNPJ válido.");
+        }
+
+        // Codificação de senha, se necessário
+        String encodedPassword = usuario.getSenha();
         usuario.setSenha(encodedPassword); // Define a senha codificada
-        return usuarioRepository.save(usuario);
+
+        Usuario savedUsuario = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(savedUsuario);
     }
 
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
+    public ResponseEntity<?> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
+        String cpfCnpj = usuarioDetails.getCpf_cnpj();
+
+        // Validação para CPF (11 dígitos) ou CNPJ (14 dígitos)
+        if (cpfCnpj.length() == 11) {
+            if (!ValidadorCpfCnpj.isCpf(cpfCnpj)) {
+                return ResponseEntity.badRequest().body("CPF inválido.");
+            }
+        } else if (cpfCnpj.length() == 14) {
+            if (!ValidadorCpfCnpj.isCnpj(cpfCnpj)) {
+                return ResponseEntity.badRequest().body("CNPJ inválido.");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("O número informado não é um CPF nem um CNPJ válido.");
+        }
+
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if (usuario.isPresent()) {
             Usuario usuarioToUpdate = usuario.get();
-            
+
+            // Verifica e atualiza a senha, se necessário
             if (!usuarioDetails.getSenha().equals(usuarioToUpdate.getSenha())) {
                 String encodedPassword = usuarioDetails.getSenha();
                 usuarioToUpdate.setSenha(encodedPassword);
             }
+
+            // Atualiza os outros campos
             usuarioToUpdate.setUsername(usuarioDetails.getUsername());
             usuarioToUpdate.setEmail(usuarioDetails.getEmail());
             usuarioToUpdate.setNome(usuarioDetails.getNome());
@@ -66,8 +100,8 @@ public class UsuarioController {
             usuarioToUpdate.setNumero(usuarioDetails.getNumero());
             usuarioToUpdate.setDescricaoPerfil(usuarioDetails.getDescricaoPerfil());
             usuarioToUpdate.setFotoPerfil(usuarioDetails.getFotoPerfil());
+
             Usuario updatedUsuario = usuarioRepository.save(usuarioToUpdate);
-            
             return ResponseEntity.ok(updatedUsuario);
         } else {
             return ResponseEntity.notFound().build();
