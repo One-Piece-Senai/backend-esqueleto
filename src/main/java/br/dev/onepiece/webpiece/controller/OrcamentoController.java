@@ -16,7 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Orcamento;
+import br.dev.onepiece.webpiece.model.Projeto;
+import br.dev.onepiece.webpiece.model.Usuario;
+import br.dev.onepiece.webpiece.model.dto.OrcamentoDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
+import br.dev.onepiece.webpiece.repository.ProjetoRepository;
+import br.dev.onepiece.webpiece.repository.UsuarioRepository;
 
 @RestController
 @CrossOrigin(origins = "*") // Permite requisições de qualquer origem
@@ -25,6 +30,14 @@ public class OrcamentoController {
 
     @Autowired
     private OrcamentoRepository orcamentoRepository;
+    
+    @Autowired
+    private UsuarioRepository usuarioController;
+    
+    @Autowired
+    private ProjetoRepository projetoController;
+    
+ 
 
     // Listar todos os orcamentos
     @GetMapping("/listar")
@@ -41,7 +54,11 @@ public class OrcamentoController {
 
     // Criar um novo orcamento
     @PostMapping("/criar")
-    public Orcamento createOrcamento(@RequestBody Orcamento orcamento) {
+    public Orcamento createOrcamento(@RequestBody OrcamentoDTO dto) {
+    	Usuario usuario = usuarioController.findById(dto.getIdUsuario()).orElse(null);
+    	Projeto projeto = projetoController.findById(dto.getIdProjeto()).orElse(null);
+    	Orcamento orcamento = new Orcamento(dto.getValor(), dto.getDataEntrega(), dto.getFormaPagamento(), dto.getStatus(), projeto, usuario);
+    	
         return orcamentoRepository.save(orcamento);
     }
 

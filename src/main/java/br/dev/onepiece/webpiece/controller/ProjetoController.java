@@ -1,5 +1,6 @@
 package br.dev.onepiece.webpiece.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,27 +17,47 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Projeto;
+import br.dev.onepiece.webpiece.model.Usuario;
+import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
+import br.dev.onepiece.webpiece.model.dto.UsuarioDTO;
+import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
 import br.dev.onepiece.webpiece.repository.ProjetoRepository;
+import br.dev.onepiece.webpiece.repository.UsuarioRepository;
 
 @RestController
 @CrossOrigin(origins = "*") // Permite requisições de qualquer origem
 @RequestMapping("/projetos") // Caminho da API
 public class ProjetoController {
+	
+
+    @Autowired
+    private OrcamentoRepository orcamentoRepository;
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private ProjetoRepository projetoRepository;
 
     // Listar todos os projetos
     @GetMapping("/listar")
-    public List<Projeto> getAllProjetos() {
-        return projetoRepository.findAll();
+    public List<ProjetoDTO> getAllProjetos() {
+    	List <Projeto> projetos = projetoRepository.findAll();
+    	List<ProjetoDTO> dtos = new ArrayList<ProjetoDTO>();
+    	projetos.stream()
+    	.forEach(projeto ->{
+    		dtos.add(new ProjetoDTO(projeto));
+    	} );
+    	
+        return dtos;
     }
 
     // Buscar projeto por ID
     @GetMapping("/buscar/{id}")
-    public ResponseEntity<Projeto> getProjetoById(@PathVariable Long id) {
-        Optional<Projeto> projeto = projetoRepository.findById(id);
-        return projeto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ProjetoDTO> getProjetoById(@PathVariable Long id) {
+        Projeto projeto = projetoRepository.findById(id).orElse(null);
+        ProjetoDTO projetoDTO = new ProjetoDTO(projeto);
+        return ResponseEntity.ok(projetoDTO);
     }
 
     // Criar um novo projeto

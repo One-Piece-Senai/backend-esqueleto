@@ -1,5 +1,6 @@
 package br.dev.onepiece.webpiece.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Usuario;
+import br.dev.onepiece.webpiece.model.dto.UsuarioDTO;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository;
 import br.dev.onepiece.webpiece.utils.ValidadorCpfCnpj; // Importando a classe utilitária
 
@@ -26,8 +28,15 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @GetMapping("/listar")
-    public List<Usuario> getAllUsuarios() {
-        return usuarioRepository.findAll();
+    public List<UsuarioDTO> getAllUsuarios() {
+    	List <Usuario> usuarios = usuarioRepository.findAll();
+    	List<UsuarioDTO> dtos = new ArrayList<UsuarioDTO>();
+    	usuarios.stream()
+    	.forEach(usuario ->{
+    		dtos.add(new UsuarioDTO(usuario));
+    	} );
+    	
+        return dtos;
     }
 
     @GetMapping("/buscar/{id}")
