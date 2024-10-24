@@ -46,11 +46,11 @@ public class Projeto implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "idUsuario")
-	@JsonManagedReference
+	@JsonBackReference
 	private Usuario usuario;
 	
-	@OneToMany(mappedBy = "projeto", fetch = FetchType.LAZY)
-	@JsonBackReference
+	@OneToMany(mappedBy = "projeto",cascade = CascadeType.ALL ) //fetch = FetchType.LAZY
+	@JsonManagedReference
 	private List<Orcamento> orcamentos;
 
 	//public Projeto() {}
