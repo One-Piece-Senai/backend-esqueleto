@@ -38,7 +38,7 @@ public class ProjetoDTO {
 	
 	private UsuarioDTO usuario;
 	
-	private List<Orcamento> orcamento;
+	private List<OrcamentoRespostaDTO> orcamento;
 	
 	public Long getId() {
 		return id;
@@ -106,21 +106,19 @@ public class ProjetoDTO {
 	public void setStatusprojeto(StatusProjeto statusprojeto) {
 		this.statusprojeto = statusprojeto;
 	}
-	
-	
 	public UsuarioDTO getUsuario() {
 		return usuario;
 	}
 	public void setUsuario(UsuarioDTO usuario) {
 		this.usuario = usuario;
 	}
-	public List<Orcamento> getOrcamento() {
+	public List<OrcamentoRespostaDTO> getOrcamento() {
 		return orcamento;
 	}
-	public void setOrcamento(List<Orcamento> orcamento) {
+	public void setOrcamento(List<OrcamentoRespostaDTO> orcamento) {
 		this.orcamento = orcamento;
 	}
-	public ProjetoDTO(Projeto projeto) {
+	public ProjetoDTO(Projeto projeto, List<OrcamentoRespostaDTO> dtos) {
 		super();
 		this.id = projeto.getId();
 		this.largura = projeto.getLargura();
@@ -134,8 +132,9 @@ public class ProjetoDTO {
 		this.followup = projeto.getFollowup();
 		this.statusprojeto = projeto.getStatusprojeto();
 		this.usuario = new UsuarioDTO(projeto.getUsuario());
-		this.orcamento = projeto.getOrcamentos();
+		this.orcamento = dtos;
 	}
+
 	
 	
 

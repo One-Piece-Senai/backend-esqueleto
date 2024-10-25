@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.dev.onepiece.webpiece.model.Orcamento;
 import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
+import br.dev.onepiece.webpiece.model.dto.OrcamentoRespostaDTO;
 import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
 import br.dev.onepiece.webpiece.model.dto.UsuarioDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
@@ -34,6 +36,9 @@ public class ProjetoController {
     private OrcamentoRepository orcamentoRepository;
     
     @Autowired
+    private OrcamentoController orcamentoController;
+    
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -42,21 +47,52 @@ public class ProjetoController {
     // Listar todos os projetos
     @GetMapping("/listar")
     public List<ProjetoDTO> getAllProjetos() {
-    	List <Projeto> projetos = projetoRepository.findAll();
-    	List<ProjetoDTO> dtos = new ArrayList<ProjetoDTO>();
-    	projetos.stream()
-    	.forEach(projeto ->{
-    		dtos.add(new ProjetoDTO(projeto));
-    	} );
-    	
+        List<Projeto> projetos = projetoRepository.findAll();
+        List<ProjetoDTO> dtos = new ArrayList<>();
+
+        for (Projeto projeto : projetos) {
+            List<OrcamentoRespostaDTO> orcamentoDtos = new ArrayList<>();
+
+            for (Orcamento orcamento : projeto.getOrcamentos()) {
+                OrcamentoRespostaDTO orcamentoDto = new OrcamentoRespostaDTO(
+                    orcamento.getId(),
+                    orcamento.getValor(),
+                    orcamento.getDataEntrega(),
+                    orcamento.getFormaPagamento(),
+                    orcamento.getStatus(),
+                    orcamento.getUsuario()
+                );
+                orcamentoDtos.add(orcamentoDto);
+            }
+
+            dtos.add(new ProjetoDTO(projeto, orcamentoDtos));
+        }
+
         return dtos;
     }
 
-    // Buscar projeto por ID
     @GetMapping("/buscar/{id}")
     public ResponseEntity<ProjetoDTO> getProjetoById(@PathVariable Long id) {
         Projeto projeto = projetoRepository.findById(id).orElse(null);
-        ProjetoDTO projetoDTO = new ProjetoDTO(projeto);
+        
+        if (projeto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<OrcamentoRespostaDTO> orcamentoDtos = new ArrayList<>();
+        for (Orcamento orcamento : projeto.getOrcamentos()) {
+            OrcamentoRespostaDTO orcamentoDto = new OrcamentoRespostaDTO(
+                orcamento.getId(),
+                orcamento.getValor(),
+                orcamento.getDataEntrega(),
+                orcamento.getFormaPagamento(),
+                orcamento.getStatus(),
+                orcamento.getUsuario()
+            );
+            orcamentoDtos.add(orcamentoDto);
+        }
+        
+        ProjetoDTO projetoDTO = new ProjetoDTO(projeto, orcamentoDtos);
         return ResponseEntity.ok(projetoDTO);
     }
 

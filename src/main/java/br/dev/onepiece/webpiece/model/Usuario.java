@@ -62,13 +62,6 @@ public class Usuario implements Serializable {
 	private TipoUsuario tipo;
 
 	
-	@OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL ) //fetch = FetchType.LAZY
-	@JsonManagedReference
-	private List<Projeto> projetos;
-	
-	@OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL ) //fetch = FetchType.LAZY
-	@JsonManagedReference
-	private List<Orcamento> orcamentos;
 
 	public Usuario() {
 	}
@@ -178,14 +171,6 @@ public class Usuario implements Serializable {
 		this.tipo = tipo;
 	}
 
-	public List<Projeto> getProjetos() {
-		return projetos;
-	}
-
-	public void setProjetos(List<Projeto> projetos) {
-		this.projetos = projetos;
-	}	
-	
 	
 	
 

@@ -1,5 +1,6 @@
 package br.dev.onepiece.webpiece.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import br.dev.onepiece.webpiece.model.Orcamento;
 import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoDTO;
+import br.dev.onepiece.webpiece.model.dto.OrcamentoRespostaDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
 import br.dev.onepiece.webpiece.repository.ProjetoRepository;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository;
@@ -41,8 +43,14 @@ public class OrcamentoController {
 
     // Listar todos os orcamentos
     @GetMapping("/listar")
-    public List<Orcamento> getAllOrcamentos() {
-        return orcamentoRepository.findAll();
+    public List<OrcamentoRespostaDTO> getAllOrcamentos() {
+       List<Orcamento> orcamentos = orcamentoRepository.findAll();
+       List<OrcamentoRespostaDTO> dtos = new ArrayList<>();
+       orcamentos.stream()
+       .forEach(o -> {
+    	   dtos.add(new OrcamentoRespostaDTO(o.getId(), o.getValor(), o.getDataEntrega(), o.getFormaPagamento(), o.getStatus(), o.getUsuario()));
+       });
+       return dtos;
     }
 
     // Buscar orcamento por ID
