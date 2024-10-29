@@ -34,12 +34,12 @@ public class Orcamento implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "idProjeto")
-	@JsonBackReference
+	//@JsonBackReference
 	private Projeto projeto;
 	
 	@ManyToOne
 	@JoinColumn(name = "idUsuario")
-	@JsonBackReference
+	//@JsonBackReference
 	private Usuario usuario;	
 
 	public Usuario getUsuario() {

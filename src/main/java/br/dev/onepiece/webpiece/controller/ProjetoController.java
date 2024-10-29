@@ -1,4 +1,4 @@
-package br.dev.onepiece.webpiece.controller;
+	package br.dev.onepiece.webpiece.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Orcamento;
 import br.dev.onepiece.webpiece.model.Projeto;
-import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoRespostaDTO;
 import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
-import br.dev.onepiece.webpiece.model.dto.UsuarioDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
 import br.dev.onepiece.webpiece.repository.ProjetoRepository;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository;

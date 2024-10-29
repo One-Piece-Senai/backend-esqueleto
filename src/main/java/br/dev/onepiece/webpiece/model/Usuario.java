@@ -61,7 +61,10 @@ public class Usuario implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private TipoUsuario tipo;
 
-	
+
+	@OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL ) //fetch = FetchType.LAZY
+	//@JsonManagedReference
+	private List<Projeto> projetos;
 
 	public Usuario() {
 	}
