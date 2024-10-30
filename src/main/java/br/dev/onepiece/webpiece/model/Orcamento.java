@@ -1,9 +1,6 @@
 package br.dev.onepiece.webpiece.model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
 import jakarta.persistence.Entity;
@@ -18,7 +15,7 @@ import jakarta.transaction.Transactional;
 
 @Entity
 @Transactional
-public class Orcamento implements Serializable {
+public class Orcamento {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

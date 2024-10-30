@@ -1,21 +1,26 @@
 package br.dev.onepiece.webpiece.model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.dev.onepiece.webpiece.enums.FollowUp;
 import br.dev.onepiece.webpiece.enums.Material;
 import br.dev.onepiece.webpiece.enums.StatusProjeto;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.transaction.Transactional;
 
 @Entity
 @Transactional
-public class Projeto implements Serializable {
+public class Projeto  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,10 +55,12 @@ public class Projeto implements Serializable {
 	private Usuario usuario;
 	
 	@OneToMany(mappedBy = "projeto",cascade = CascadeType.ALL ) //fetch = FetchType.LAZY
-	@JsonManagedReference
+	//@JsonManagedReference
 	private List<Orcamento> orcamentos;
 
-	//public Projeto() {}
+	public Projeto() {
+		
+	}
 	
 	// Get Set--------------------------
 	
@@ -158,6 +165,25 @@ public class Projeto implements Serializable {
 	}
 
 	public void setOrcamentos(List<Orcamento> orcamentos) {
+		this.orcamentos = orcamentos;
+	}
+
+	public Projeto(Long id, float largura, float comprimento, float altura, String descricao, String caminhoArquivo,
+			LocalDate dataFinalizacao, String imagem, Material material, FollowUp followup, StatusProjeto statusprojeto,
+			Usuario usuario, List<Orcamento> orcamentos) {
+		super();
+		this.id = id;
+		this.largura = largura;
+		this.comprimento = comprimento;
+		this.altura = altura;
+		this.descricao = descricao;
+		this.caminhoArquivo = caminhoArquivo;
+		this.dataFinalizacao = dataFinalizacao;
+		this.imagem = imagem;
+		this.material = material;
+		this.followup = followup;
+		this.statusprojeto = statusprojeto;
+		this.usuario = usuario;
 		this.orcamentos = orcamentos;
 	}	
 

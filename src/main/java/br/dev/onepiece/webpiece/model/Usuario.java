@@ -1,10 +1,6 @@
 package br.dev.onepiece.webpiece.model;
 
-import java.io.Serializable;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import br.dev.onepiece.webpiece.enums.TipoUsuario;
 import jakarta.persistence.CascadeType;
@@ -22,7 +18,7 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Transactional
-public class Usuario implements Serializable {
+public class Usuario  {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

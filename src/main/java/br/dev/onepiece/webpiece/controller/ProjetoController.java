@@ -1,4 +1,4 @@
-	package br.dev.onepiece.webpiece.controller;
+package br.dev.onepiece.webpiece.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.model.Orcamento;
 import br.dev.onepiece.webpiece.model.Projeto;
+import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoRespostaDTO;
 import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
@@ -96,16 +97,37 @@ public class ProjetoController {
 
     // Criar um novo projeto
     @PostMapping("/criar")
-    public Projeto createProjeto(@RequestBody Projeto projeto) {
-        return projetoRepository.save(projeto);
+    public ResponseEntity<?> createProjeto(@RequestBody Projeto projeto) {
+        // Obter o ID do usuário a partir do projeto
+        Long usuarioId = projeto.getUsuario() != null ? projeto.getUsuario().getId() : null;
+
+        // Buscar o usuário pelo ID
+        if (usuarioId != null) {
+            Optional<Usuario> usuarioOptional = usuarioRepository.findById(usuarioId);
+            if (usuarioOptional.isPresent()) {
+                projeto.setUsuario(usuarioOptional.get());
+                Projeto savedProjeto = projetoRepository.save(projeto);
+                return ResponseEntity.ok(savedProjeto);
+            } else {
+                return ResponseEntity.badRequest().body("Usuário não encontrado.");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("ID do usuário não fornecido.");
+        }
     }
 
     // Atualizar um projeto existente
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<Projeto> updateProjeto(@PathVariable Long id, @RequestBody Projeto projetoDetails) {
-        Optional<Projeto> projeto = projetoRepository.findById(id);
-        if (projeto.isPresent()) {
-            Projeto projetoToUpdate = projeto.get();
+    public ResponseEntity<?> updateProjeto(@PathVariable Long id, @RequestBody Projeto projetoDetails) {
+        if (projetoDetails == null) {
+            return ResponseEntity.badRequest().body("Dados do projeto não podem ser nulos.");
+        }
+
+        Optional<Projeto> projetoOptional = projetoRepository.findById(id);
+        if (projetoOptional.isPresent()) {
+            Projeto projetoToUpdate = projetoOptional.get();
+
+            // Atualizar outros campos
             projetoToUpdate.setDataFinalizacao(projetoDetails.getDataFinalizacao());
             projetoToUpdate.setImagem(projetoDetails.getImagem());
             projetoToUpdate.setFollowup(projetoDetails.getFollowup());
@@ -116,9 +138,18 @@ public class ProjetoController {
             projetoToUpdate.setMaterial(projetoDetails.getMaterial());
             projetoToUpdate.setDescricao(projetoDetails.getDescricao());
             projetoToUpdate.setCaminhoArquivo(projetoDetails.getCaminhoArquivo());
-            
-            
-            
+
+            // Atualizar o usuário
+            Long usuarioId = projetoDetails.getUsuario() != null ? projetoDetails.getUsuario().getId() : null;
+            if (usuarioId != null) {
+                Optional<Usuario> usuarioOptional = usuarioRepository.findById(usuarioId);
+                if (usuarioOptional.isPresent()) {
+                    projetoToUpdate.setUsuario(usuarioOptional.get());
+                } else {
+                    return ResponseEntity.badRequest().body("Usuário não encontrado.");
+                }
+            }
+
             Projeto updatedProjeto = projetoRepository.save(projetoToUpdate);
             return ResponseEntity.ok(updatedProjeto);
         } else {
@@ -126,6 +157,7 @@ public class ProjetoController {
         }
     }
 
+    
     // Remover um projeto
     @DeleteMapping("/remover/{id}")
     public ResponseEntity<Void> deleteProjeto(@PathVariable Long id) {
