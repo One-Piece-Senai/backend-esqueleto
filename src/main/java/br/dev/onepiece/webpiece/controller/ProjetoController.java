@@ -29,14 +29,13 @@ import br.dev.onepiece.webpiece.repository.UsuarioRepository;
 @CrossOrigin(origins = "*") // Permite requisições de qualquer origem
 @RequestMapping("/projetos") // Caminho da API
 public class ProjetoController {
-	
 
     @Autowired
     private OrcamentoRepository orcamentoRepository;
-    
+
     @Autowired
     private OrcamentoController orcamentoController;
-    
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -157,7 +156,6 @@ public class ProjetoController {
         }
     }
 
-    
     // Remover um projeto
     @DeleteMapping("/remover/{id}")
     public ResponseEntity<Void> deleteProjeto(@PathVariable Long id) {
@@ -167,5 +165,39 @@ public class ProjetoController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // Listar projetos de um cliente específico pelo ID do usuário
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<List<ProjetoDTO>> getProjetosByClienteId(@PathVariable Long clienteId) {
+        // Buscar o usuário pelo ID
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(clienteId);
+        if (!usuarioOptional.isPresent()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        Usuario usuario = usuarioOptional.get();
+        // Buscar todos os projetos associados ao usuário
+        List<Projeto> projetos = projetoRepository.findByUsuario(usuario);
+        List<ProjetoDTO> dtos = new ArrayList<>();
+
+        for (Projeto projeto : projetos) {
+            List<OrcamentoRespostaDTO> orcamentoDtos = new ArrayList<>();
+            for (Orcamento orcamento : projeto.getOrcamentos()) {
+                OrcamentoRespostaDTO orcamentoDto = new OrcamentoRespostaDTO(
+                    orcamento.getId(),
+                    orcamento.getValor(),
+                    orcamento.getDataEntrega(),
+                    orcamento.getFormaPagamento(),
+                    orcamento.getStatus(),
+                    orcamento.getUsuario()
+                );
+                orcamentoDtos.add(orcamentoDto);
+            }
+
+            dtos.add(new ProjetoDTO(projeto, orcamentoDtos));
+        }
+
+        return ResponseEntity.ok(dtos);
     }
 }

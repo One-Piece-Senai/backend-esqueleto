@@ -37,7 +37,7 @@ public class Usuario  {
 
 	private String nome;
 	
-	@NotBlank
+	//@NotBlank
 	private String cpf_cnpj;
 	
 	@NotBlank

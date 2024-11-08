@@ -16,7 +16,7 @@ public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
 	//Optional<List<Usuario>> findByUsuario_(Long id);// Quando logar como Projtista I - enxerga os próprios projetos "em andamento"
 	
 	//Optional<List<Usuario>> findByUsuario_Id(Long id);// Quando logar como Projtista II - enxerga os projetos "não iniciados"
-	
+	public List<Projeto> findByUsuario(Usuario usuario);
 	
 	
 }
