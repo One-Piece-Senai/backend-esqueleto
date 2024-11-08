@@ -1,7 +1,13 @@
 package br.dev.onepiece.webpiece.repository;
 
-import br.dev.onepiece.webpiece.model.Orcamento;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import br.dev.onepiece.webpiece.model.Orcamento;
+
 public interface OrcamentoRepository extends JpaRepository<Orcamento, Long> {
+	
+	// Método para buscar orçamentos por ID do usuário (projetista)
+    List<Orcamento> findByUsuarioId(Long idUsuario);
 }

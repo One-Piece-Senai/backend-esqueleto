@@ -34,23 +34,38 @@ public class OrcamentoController {
     private OrcamentoRepository orcamentoRepository;
     
     @Autowired
-    private UsuarioRepository usuarioController;
+    private UsuarioRepository usuarioRepository;
     
     @Autowired
-    private ProjetoRepository projetoController;
+    private ProjetoRepository projetoRepository;
     
- 
-
-    // Listar todos os orcamentos
+    // Listar todos os orçamentos
     @GetMapping("/listar")
     public List<OrcamentoRespostaDTO> getAllOrcamentos() {
        List<Orcamento> orcamentos = orcamentoRepository.findAll();
        List<OrcamentoRespostaDTO> dtos = new ArrayList<>();
-       orcamentos.stream()
-       .forEach(o -> {
-    	   dtos.add(new OrcamentoRespostaDTO(o.getId(), o.getValor(), o.getDataEntrega(), o.getFormaPagamento(), o.getStatus(), o.getUsuario()));
+       orcamentos.forEach(o -> {
+           dtos.add(new OrcamentoRespostaDTO(o.getId(), o.getValor(), o.getDataEntrega(), o.getFormaPagamento(), o.getStatus(), o.getUsuario()));
        });
        return dtos;
+    }
+
+    // Buscar orçamentos por ID do Projetista (idUsuario)
+    @GetMapping("/listarPorUsuario/{idUsuario}")
+    public ResponseEntity<List<OrcamentoRespostaDTO>> getOrcamentosByUsuarioId(@PathVariable Long idUsuario) {
+        // Verificar se o usuário existe
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
+        if (usuarioOptional.isPresent()) {
+            // Buscar os orçamentos relacionados a este usuário
+            List<Orcamento> orcamentos = orcamentoRepository.findByUsuarioId(idUsuario); // Método personalizado no repositório
+            List<OrcamentoRespostaDTO> dtos = new ArrayList<>();
+            orcamentos.forEach(o -> {
+                dtos.add(new OrcamentoRespostaDTO(o.getId(), o.getValor(), o.getDataEntrega(), o.getFormaPagamento(), o.getStatus(), o.getUsuario()));
+            });
+            return ResponseEntity.ok(dtos);
+        } else {
+            return ResponseEntity.notFound().build(); // Retorna 404 se o usuário não existir
+        }
     }
 
     // Buscar orcamento por ID
@@ -63,10 +78,10 @@ public class OrcamentoController {
     // Criar um novo orcamento
     @PostMapping("/criar")
     public Orcamento createOrcamento(@RequestBody OrcamentoDTO dto) {
-    	Usuario usuario = usuarioController.findById(dto.getIdUsuario()).orElse(null);
-    	Projeto projeto = projetoController.findById(dto.getIdProjeto()).orElse(null);
-    	Orcamento orcamento = new Orcamento(dto.getValor(), dto.getDataEntrega(), dto.getFormaPagamento(), dto.getStatus(), projeto, usuario);
-    	
+        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
+        Projeto projeto = projetoRepository.findById(dto.getIdProjeto()).orElse(null);
+        Orcamento orcamento = new Orcamento(dto.getValor(), dto.getDataEntrega(), dto.getFormaPagamento(), dto.getStatus(), projeto, usuario);
+        
         return orcamentoRepository.save(orcamento);
     }
 
@@ -80,9 +95,6 @@ public class OrcamentoController {
             orcamentoToUpdate.setValor(orcamentoDetails.getValor());
             orcamentoToUpdate.setFormaPagamento(orcamentoDetails.getFormaPagamento());
             orcamentoToUpdate.setStatus(orcamentoDetails.getStatus());
-           
-            
-            
             
             Orcamento updatedOrcamento = orcamentoRepository.save(orcamentoToUpdate);
             return ResponseEntity.ok(updatedOrcamento);
@@ -102,3 +114,5 @@ public class OrcamentoController {
         }
     }
 }
+
+
