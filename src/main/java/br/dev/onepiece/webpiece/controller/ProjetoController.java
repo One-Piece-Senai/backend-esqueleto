@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.dev.onepiece.webpiece.enums.StatusProjeto;
 import br.dev.onepiece.webpiece.model.Orcamento;
 import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
@@ -34,9 +36,6 @@ public class ProjetoController {
     private OrcamentoRepository orcamentoRepository;
 
     @Autowired
-    private OrcamentoController orcamentoController;
-
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -50,7 +49,6 @@ public class ProjetoController {
 
         for (Projeto projeto : projetos) {
             List<OrcamentoRespostaDTO> orcamentoDtos = new ArrayList<>();
-
             for (Orcamento orcamento : projeto.getOrcamentos()) {
                 OrcamentoRespostaDTO orcamentoDto = new OrcamentoRespostaDTO(
                     orcamento.getId(),
@@ -62,11 +60,26 @@ public class ProjetoController {
                 );
                 orcamentoDtos.add(orcamentoDto);
             }
-
             dtos.add(new ProjetoDTO(projeto, orcamentoDtos));
         }
 
         return dtos;
+    }
+
+    // Atualizar status do projeto
+    //PUT http://localhost:8080/projetos/atualizar-status/1?status={ABERTO/CONCLUIDO/NÃO_INICIADO/EM_ANDAMENTO}
+    @PutMapping("/atualizar-status/{id}")
+    public ResponseEntity<?> atualizarStatus(@PathVariable Long id, @RequestParam StatusProjeto status) {
+        Optional<Projeto> projetoOptional = projetoRepository.findById(id);
+
+        if (projetoOptional.isPresent()) {
+            Projeto projeto = projetoOptional.get();
+            projeto.setStatusprojeto(status);  // Atualiza o status do projeto com o novo valor
+            Projeto projetoAtualizado = projetoRepository.save(projeto);
+            return ResponseEntity.ok(projetoAtualizado);  // Retorna o projeto atualizado
+        } else {
+            return ResponseEntity.notFound().build();  // Retorna 404 se o projeto não for encontrado
+        }
     }
 
     @GetMapping("/buscar/{id}")
@@ -115,7 +128,7 @@ public class ProjetoController {
         }
     }
 
-    // Atualizar um projeto existente
+    // Atualizar um projeto existente (completo)
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<?> updateProjeto(@PathVariable Long id, @RequestBody Projeto projetoDetails) {
         if (projetoDetails == null) {
