@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import br.dev.onepiece.webpiece.enums.StatusProjeto;
 import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
 
@@ -17,6 +18,8 @@ public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
 	
 	//Optional<List<Usuario>> findByUsuario_Id(Long id);// Quando logar como Projtista II - enxerga os projetos "não iniciados"
 	public List<Projeto> findByUsuario(Usuario usuario);
+	
+	long countByUsuarioIdAndStatusprojeto(Long usuarioId, StatusProjeto statusprojeto);
 	
 	
 }
