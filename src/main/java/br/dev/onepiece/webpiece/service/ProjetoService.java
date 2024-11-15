@@ -30,7 +30,7 @@ public class ProjetoService {
         contagem.put("EM_ANDAMENTO", projetoRepository.countByUsuarioIdAndStatusprojeto(usuarioId, StatusProjeto.EM_ANDAMENTO));
         contagem.put("CONCLUIDO", projetoRepository.countByUsuarioIdAndStatusprojeto(usuarioId, StatusProjeto.CONCLUIDO));
         contagem.put("ABERTO", projetoRepository.countByUsuarioIdAndStatusprojeto(usuarioId, StatusProjeto.ABERTO));
-        contagem.put("NAO_INICIADO", projetoRepository.countByUsuarioIdAndStatusprojeto(usuarioId, StatusProjeto.NAO_INICIADO));
+        contagem.put("NÃO_INICIADO", projetoRepository.countByUsuarioIdAndStatusprojeto(usuarioId, StatusProjeto.NÃO_INICIADO));
 
         System.out.println("Blabla");
         

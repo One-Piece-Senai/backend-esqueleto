@@ -20,6 +20,8 @@ public interface ProjetoRepository extends JpaRepository<Projeto, Long> {
 	public List<Projeto> findByUsuario(Usuario usuario);
 	
 	long countByUsuarioIdAndStatusprojeto(Long usuarioId, StatusProjeto statusprojeto);
+
+	List<Projeto> findByStatusprojeto(StatusProjeto aberto);
 	
 	
 }

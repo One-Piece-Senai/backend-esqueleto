@@ -65,6 +65,32 @@ public class ProjetoController {
 
         return dtos;
     }
+    
+ // Método para listar projetos com status "ABERTO"
+    //http://localhost:8080/projetos/listar-aberto
+    @GetMapping("/listar-aberto")
+    public ResponseEntity<List<ProjetoDTO>> getProjetosAbertos() {
+        List<Projeto> projetosAbertos = projetoRepository.findByStatusprojeto(StatusProjeto.ABERTO);
+        List<ProjetoDTO> dtos = new ArrayList<>();
+
+        for (Projeto projeto : projetosAbertos) {
+            List<OrcamentoRespostaDTO> orcamentoDtos = new ArrayList<>();
+            for (Orcamento orcamento : projeto.getOrcamentos()) {
+                OrcamentoRespostaDTO orcamentoDto = new OrcamentoRespostaDTO(
+                    orcamento.getId(),
+                    orcamento.getValor(),
+                    orcamento.getDataEntrega(),
+                    orcamento.getFormaPagamento(),
+                    orcamento.getStatus(),
+                    orcamento.getUsuario()
+                );
+                orcamentoDtos.add(orcamentoDto);
+            }
+            dtos.add(new ProjetoDTO(projeto, orcamentoDtos));
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
 
     // Atualizar status do projeto
     //PUT http://localhost:8080/projetos/atualizar-status/1?status={ABERTO/CONCLUIDO/NÃO_INICIADO/EM_ANDAMENTO}
