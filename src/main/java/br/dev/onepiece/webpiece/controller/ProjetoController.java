@@ -66,6 +66,40 @@ public class ProjetoController {
         return dtos;
     }
     
+ // Listar todos os projetos que possuem orçamento vinculado
+ //localhost:8080/projetos/listar-com-orcamento
+    @GetMapping("/listar-com-orcamento")
+    public ResponseEntity<List<ProjetoDTO>> getProjetosComOrcamento() {
+        // Buscar todos os projetos
+        List<Projeto> projetos = projetoRepository.findAll();
+        List<ProjetoDTO> dtos = new ArrayList<>();
+
+        for (Projeto projeto : projetos) {
+            // Verificar se o projeto tem orçamentos associados
+            if (projeto.getOrcamentos() != null && !projeto.getOrcamentos().isEmpty()) {
+                List<OrcamentoRespostaDTO> orcamentoDtos = new ArrayList<>();
+                for (Orcamento orcamento : projeto.getOrcamentos()) {
+                    OrcamentoRespostaDTO orcamentoDto = new OrcamentoRespostaDTO(
+                        orcamento.getId(),
+                        orcamento.getValor(),
+                        orcamento.getDataEntrega(),
+                        orcamento.getFormaPagamento(),
+                        orcamento.getStatus(),
+                        orcamento.getUsuario()
+                    );
+                    orcamentoDtos.add(orcamentoDto);
+                }
+                dtos.add(new ProjetoDTO(projeto, orcamentoDtos));
+            }
+        }
+
+        if (dtos.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Retorna 204 No Content se não houver projetos com orçamento
+        }
+
+        return ResponseEntity.ok(dtos); // Retorna os projetos com orçamentos
+    }
+    
  // Método para listar projetos com status "ABERTO"
     //http://localhost:8080/projetos/listar-aberto
     @GetMapping("/listar-aberto")
