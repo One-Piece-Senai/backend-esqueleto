@@ -18,9 +18,6 @@ public class UsuarioDTO {
 	@Enumerated(EnumType.STRING)
 	private TipoUsuario tipo;
 	
-
-	
-	
 	public TipoUsuario getTipo() {
 		return tipo;
 	}

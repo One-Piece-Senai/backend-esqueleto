@@ -10,4 +10,6 @@ public interface OrcamentoRepository extends JpaRepository<Orcamento, Long> {
 	
 	// Método para buscar orçamentos por ID do usuário (projetista)
     List<Orcamento> findByUsuarioId(Long idUsuario);
+
+	Orcamento findByUsuarioIdAndProjetoId(Long id, Long id2);
 }
