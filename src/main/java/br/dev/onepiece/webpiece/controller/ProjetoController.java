@@ -249,6 +249,7 @@ public class ProjetoController {
             Projeto projetoToUpdate = projetoOptional.get();
 
             // Atualizar outros campos
+            projetoToUpdate.setTitulo(projetoDetails.getTitulo());
             projetoToUpdate.setDataFinalizacao(projetoDetails.getDataFinalizacao());
             projetoToUpdate.setImagem(projetoDetails.getImagem());
             projetoToUpdate.setFollowup(projetoDetails.getFollowup());

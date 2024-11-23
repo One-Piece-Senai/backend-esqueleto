@@ -49,7 +49,8 @@ public class Usuario  {
 	private String endereco;
 
 	private String numero;
-
+	
+	@Size(max = 1000)
 	private String descricaoPerfil;
 
 	private String fotoPerfil;
