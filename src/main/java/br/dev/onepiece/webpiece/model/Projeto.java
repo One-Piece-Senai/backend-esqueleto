@@ -28,14 +28,6 @@ public class Projeto  {
 
 	private String titulo;
 	
-	public String getTitulo() {
-		return titulo;
-	}
-
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
-
 	private float largura;
 
 	private float comprimento;
@@ -80,6 +72,14 @@ public class Projeto  {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
 	}
 
 	public float getLargura() {
