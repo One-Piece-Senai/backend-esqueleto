@@ -21,11 +21,22 @@ public class ProjetoDTO {
 	private float altura;
 
 	private String descricao; 
+	
+	private String titulo;
+	
+	public String getTitulo() {
+		return titulo;
+	}
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
 	private String caminhoArquivo;
 
 	private LocalDate dataFinalizacao;
 
 	private String imagem;
+	
+	
 
 	@Enumerated(EnumType.STRING)
 	private Material material;
@@ -121,6 +132,7 @@ public class ProjetoDTO {
 	public ProjetoDTO(Projeto projeto, List<OrcamentoRespostaDTO> dtos) {
 		super();
 		this.id = projeto.getId();
+		this.titulo = projeto.getTitulo();
 		this.largura = projeto.getLargura();
 		this.comprimento = projeto.getComprimento();
 		this.altura = projeto.getAltura();

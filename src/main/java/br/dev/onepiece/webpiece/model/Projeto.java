@@ -178,11 +178,12 @@ public class Projeto  {
 		this.orcamentos = orcamentos;
 	}
 
-	public Projeto(Long id, float largura, float comprimento, float altura, String descricao, String caminhoArquivo,
+	public Projeto(Long id,String titulo, float largura, float comprimento, float altura, String descricao, String caminhoArquivo,
 			LocalDate dataFinalizacao, String imagem, Material material, FollowUp followup, StatusProjeto statusprojeto,
 			Usuario usuario, List<Orcamento> orcamentos) {
 		super();
 		this.id = id;
+		this.titulo = titulo;
 		this.largura = largura;
 		this.comprimento = comprimento;
 		this.altura = altura;
