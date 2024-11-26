@@ -119,6 +119,31 @@ public class OrcamentoController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+ // Alterar status de um orçamento
+  //"http://localhost:8080/orcamentos/alterarStatus/1" -H "Content-Type: application/json" -d "\"APROVADO\""
+    @PutMapping("/alterarStatus/{id}")
+    public ResponseEntity<Orcamento> alterarStatusOrcamento(@PathVariable Long id, @RequestBody StatusOrcamentos novoStatus) {
+        // Verificar se o orçamento existe
+        Optional<Orcamento> orcamentoOptional = orcamentoRepository.findById(id);
+        
+        if (orcamentoOptional.isPresent()) {
+            Orcamento orcamento = orcamentoOptional.get();
+            
+            // Alterar o status do orçamento
+            orcamento.setStatus(novoStatus);
+            
+            // Salvar a alteração no banco de dados
+            Orcamento orcamentoAtualizado = orcamentoRepository.save(orcamento);
+            
+            // Retornar o orçamento atualizado
+            return ResponseEntity.ok(orcamentoAtualizado);
+        } else {
+            // Retornar erro caso o orçamento não seja encontrado
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     // Remover um orcamento
     @DeleteMapping("/remover/{id}")
