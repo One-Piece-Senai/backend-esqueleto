@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
@@ -102,21 +103,21 @@ public class OrcamentoController {
         return orcamentoRepository.save(orcamento);
     }
     
- // Alterar o status de um orçamento
-    @PutMapping("/alterarStatus/{id}")
-    public ResponseEntity<Orcamento> alterarStatus(@PathVariable Long id, @RequestBody StatusOrcamentos novoStatus) {
-        Optional<Orcamento> orcamento = orcamentoRepository.findById(id);
-        if (orcamento.isPresent()) {
-            Orcamento orcamentoToUpdate = orcamento.get();
-            orcamentoToUpdate.setStatus(novoStatus); // Atualiza o status do orçamento
-            
-            Orcamento updatedOrcamento = orcamentoRepository.save(orcamentoToUpdate); // Salva a atualização
-            return ResponseEntity.ok(updatedOrcamento); // Retorna o orçamento atualizado
+    //PUT http://localhost:8080/orcamentos/atualizar-status/{ID orcamento}?status=EM_ANALISE/ACEITO/RECUSADO
+    @PutMapping("/atualizar-status/{id}")
+    public ResponseEntity<?> atualizarStatusOrcamento(@PathVariable Long id, @RequestParam StatusOrcamentos status) {
+        Optional<Orcamento> orcamentoOptional = orcamentoRepository.findById(id);
+
+        if (orcamentoOptional.isPresent()) {
+            Orcamento orcamento = orcamentoOptional.get();
+            orcamento.setStatus(status);  // Atualiza o status do orcamento com o novo valor
+            Orcamento orcamentoAtualizado = orcamentoRepository.save(orcamento);
+            return ResponseEntity.ok(orcamentoAtualizado);  // Retorna o orcamento atualizado
         } else {
-            return ResponseEntity.notFound().build(); // Retorna 404 caso o orçamento não seja encontrado
+            return ResponseEntity.notFound().build();  // Retorna 404 se o orcamento não for encontrado
         }
     }
-
+    
 
     // Atualizar um orcamento existente
     @PutMapping("/atualizar/{id}")
