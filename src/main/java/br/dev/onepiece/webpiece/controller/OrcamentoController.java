@@ -101,6 +101,22 @@ public class OrcamentoController {
         
         return orcamentoRepository.save(orcamento);
     }
+    
+ // Alterar o status de um orçamento
+    @PutMapping("/alterarStatus/{id}")
+    public ResponseEntity<Orcamento> alterarStatus(@PathVariable Long id, @RequestBody StatusOrcamentos novoStatus) {
+        Optional<Orcamento> orcamento = orcamentoRepository.findById(id);
+        if (orcamento.isPresent()) {
+            Orcamento orcamentoToUpdate = orcamento.get();
+            orcamentoToUpdate.setStatus(novoStatus); // Atualiza o status do orçamento
+            
+            Orcamento updatedOrcamento = orcamentoRepository.save(orcamentoToUpdate); // Salva a atualização
+            return ResponseEntity.ok(updatedOrcamento); // Retorna o orçamento atualizado
+        } else {
+            return ResponseEntity.notFound().build(); // Retorna 404 caso o orçamento não seja encontrado
+        }
+    }
+
 
     // Atualizar um orcamento existente
     @PutMapping("/atualizar/{id}")
@@ -119,31 +135,7 @@ public class OrcamentoController {
             return ResponseEntity.notFound().build();
         }
     }
-    
- // Alterar status de um orçamento
-  //"http://localhost:8080/orcamentos/alterarStatus/1" -H "Content-Type: application/json" -d "\"APROVADO\""
-    @PutMapping("/alterarStatus/{id}")
-    public ResponseEntity<Orcamento> alterarStatusOrcamento(@PathVariable Long id, @RequestBody StatusOrcamentos novoStatus) {
-        // Verificar se o orçamento existe
-        Optional<Orcamento> orcamentoOptional = orcamentoRepository.findById(id);
-        
-        if (orcamentoOptional.isPresent()) {
-            Orcamento orcamento = orcamentoOptional.get();
-            
-            // Alterar o status do orçamento
-            orcamento.setStatus(novoStatus);
-            
-            // Salvar a alteração no banco de dados
-            Orcamento orcamentoAtualizado = orcamentoRepository.save(orcamento);
-            
-            // Retornar o orçamento atualizado
-            return ResponseEntity.ok(orcamentoAtualizado);
-        } else {
-            // Retornar erro caso o orçamento não seja encontrado
-            return ResponseEntity.notFound().build();
-        }
-    }
-
+   
 
     // Remover um orcamento
     @DeleteMapping("/remover/{id}")
