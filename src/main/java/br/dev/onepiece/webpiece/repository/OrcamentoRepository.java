@@ -16,6 +16,9 @@ public interface OrcamentoRepository extends JpaRepository<Orcamento, Long> {
 	
 	 // Método para buscar orçamentos por status
     List<Orcamento> findByStatus(StatusOrcamentos status);
+    
+ // Método para encontrar orçamentos por ID do usuário e status
+    List<Orcamento> findByUsuarioIdAndStatus(Long usuarioId, StatusOrcamentos status);
 	
 	
 }

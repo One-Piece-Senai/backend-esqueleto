@@ -85,6 +85,29 @@ public class OrcamentoController {
             return ResponseEntity.notFound().build(); // Retorna 404 se o usuário não existir
         }
     }
+    
+    //http://localhost:8080/orcamentos/listarProjetosAceitosPorUsuario/{idUsuario}
+    @GetMapping("/listarProjetosAceitosPorUsuario/{idUsuario}")
+    public ResponseEntity<List<Projeto>> getProjetosAceitosByUsuarioId(@PathVariable Long idUsuario) {
+        // Verificar se o usuário existe
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
+        if (usuarioOptional.isPresent()) {
+            // Buscar os orçamentos com status 'ACEITO' relacionados a este usuário
+            List<Orcamento> orcamentosAceitos = orcamentoRepository.findByUsuarioIdAndStatus(idUsuario, StatusOrcamentos.ACEITO);
+            
+            // Obter a lista de projetos a partir dos orçamentos aceitos
+            List<Projeto> projetosAceitos = new ArrayList<>();
+            for (Orcamento orcamento : orcamentosAceitos) {
+                projetosAceitos.add(orcamento.getProjeto());
+            }
+
+            return ResponseEntity.ok(projetosAceitos); // Retorna a lista de projetos aceitos
+        } else {
+            return ResponseEntity.notFound().build(); // Retorna 404 se o usuário não existir
+        }
+    }
+    
+    
 
     // Buscar orcamento por ID
     @GetMapping("/buscar/{id}")
