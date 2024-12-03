@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
+import br.dev.onepiece.webpiece.enums.TipoUsuario;
 import br.dev.onepiece.webpiece.model.Orcamento;
 import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
@@ -107,7 +109,6 @@ public class OrcamentoController {
         }
     }
     
-    
 
     // Buscar orcamento por ID
     @GetMapping("/buscar/{id}")
@@ -116,14 +117,39 @@ public class OrcamentoController {
         return orcamento.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Criar um novo orcamento
+  //criar um orçamento
     @PostMapping("/criar")
-    public Orcamento createOrcamento(@RequestBody OrcamentoDTO dto) {
+    public ResponseEntity<String> createOrcamento(@RequestBody OrcamentoDTO dto) {
+        // Recupera o usuário pelo ID
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
+        
+        // Verifica se o usuário foi encontrado
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado!");
+        }
+
+        // Verifica se o tipo de usuário é "PROJETISTA"
+        if (usuario.getTipo() != TipoUsuario.PROJETISTA) {
+            // Se o usuário não for do tipo "PROJETISTA", retorna uma mensagem de erro
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Somente projetistas podem gerar orçamento!");
+        }
+
+        // Recupera o projeto pelo ID
         Projeto projeto = projetoRepository.findById(dto.getIdProjeto()).orElse(null);
+        
+        // Verifica se o projeto foi encontrado
+        if (projeto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Projeto não encontrado!");
+        }
+        
+        // Cria o orçamento com os dados fornecidos
         Orcamento orcamento = new Orcamento(dto.getValor(), dto.getDataEntrega(), dto.getFormaPagamento(), dto.getStatus(), projeto, usuario);
         
-        return orcamentoRepository.save(orcamento);
+        // Salva o orçamento no banco de dados
+        orcamentoRepository.save(orcamento);
+        
+        // Retorna uma resposta de sucesso
+        return ResponseEntity.status(HttpStatus.CREATED).body("Orçamento criado com sucesso!");
     }
     
     //PUT http://localhost:8080/orcamentos/atualizar-status/{ID orcamento}?status=EM_ANALISE/ACEITO/RECUSADO
