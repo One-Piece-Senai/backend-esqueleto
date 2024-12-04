@@ -3,6 +3,8 @@ package br.dev.onepiece.webpiece.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import br.dev.onepiece.webpiece.enums.FollowUp;
 import br.dev.onepiece.webpiece.enums.Material;
 import br.dev.onepiece.webpiece.enums.StatusProjeto;
@@ -57,7 +59,7 @@ public class Projeto  {
 	private Usuario usuario;
 	
 	@OneToMany(mappedBy = "projeto",cascade = CascadeType.ALL ) //fetch = FetchType.LAZY
-	//@JsonManagedReference
+	@JsonManagedReference
 	private List<Orcamento> orcamentos;
 
 	public Projeto() {

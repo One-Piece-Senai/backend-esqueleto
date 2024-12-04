@@ -2,6 +2,8 @@ package br.dev.onepiece.webpiece.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import br.dev.onepiece.webpiece.enums.StatusOrcamentos;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,12 +33,12 @@ public class Orcamento {
 
 	@ManyToOne
 	@JoinColumn(name = "idProjeto")
-	//@JsonBackReference
+	@JsonBackReference
 	private Projeto projeto;
 	
 	@ManyToOne
 	@JoinColumn(name = "idUsuario")
-	//@JsonBackReference
+	@JsonBackReference
 	private Usuario usuario;	
 
 	public Usuario getUsuario() {

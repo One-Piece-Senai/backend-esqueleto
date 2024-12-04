@@ -55,7 +55,7 @@ public class OrcamentoController {
     }
     
  // Listar orçamentos por status (escolher o Status)
- // http://localhost:8080/orcamentos/listarPorStatus/APROVADO
+ // http://localhost:8080/orcamentos/listarPorStatus/ACEITO
     @GetMapping("/listarPorStatus/{status}")
     public ResponseEntity<List<OrcamentoRespostaDTO>> getOrcamentosByStatus(@PathVariable StatusOrcamentos status) {
         // Buscar os orçamentos com o status especificado
