@@ -117,7 +117,7 @@ public class OrcamentoController {
         return orcamento.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-  //criar um orçamento
+ // Método para criar um orçamento
     @PostMapping("/criar")
     public ResponseEntity<String> createOrcamento(@RequestBody OrcamentoDTO dto) {
         // Recupera o usuário pelo ID
@@ -140,6 +140,12 @@ public class OrcamentoController {
         // Verifica se o projeto foi encontrado
         if (projeto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Projeto não encontrado!");
+        }
+        
+        // Verifica se já existe um orçamento com o mesmo idProjeto e idUsuario
+        Optional<Orcamento> existingOrcamento = orcamentoRepository.findByProjetoIdAndUsuarioId(dto.getIdProjeto(), dto.getIdUsuario());
+        if (existingOrcamento.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Já existe um orçamento para este projeto e usuário!");
         }
         
         // Cria o orçamento com os dados fornecidos
