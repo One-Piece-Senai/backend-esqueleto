@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projetos Aceitos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .projects-table th, .projects-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .projects-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .projects-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Projetos Aceitos</h1>
+    
+    <div>
+        <label for="userId">ID do Projetista: </label>
+        <input type="number" id="userId" placeholder="Digite o ID do projetista" required>
+        <button onclick="listarProjetos()">Listar Projetos</button>
+    </div>
+
+    <div id="errorMessage" class="error" style="display:none;">Usuário não encontrado ou erro ao carregar os dados.</div>
+    
+    <table class="projects-table" id="projectsTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>ID do Projeto</th>
+                <th>Nome do Projeto</th>
+                <th>Data de Criação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Os projetos aceitos serão listados aqui -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function listarProjetos() {
+        const userId = document.getElementById('userId').value;
+        
+        if (!userId) {
+            alert("Por favor, insira o ID do projetista.");
+            return;
+        }
+        
+        const url = `http://localhost:8080/orcamentos/listarProjetosAceitosPorUsuario/${userId}`;
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar os projetos ou usuário não encontrado');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Se a resposta for um array vazio
+                if (data.length === 0) {
+                    document.getElementById('errorMessage').innerText = 'Nenhum projeto aceito encontrado para este usuário.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('projectsTable').style.display = 'none';
+                } else {
+                    document.getElementById('errorMessage').style.display = 'none';
+                    const tableBody = document.getElementById('projectsTable').getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = ''; // Limpa qualquer conteúdo antigo
+
+                    data.forEach(projeto => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${projeto.id}</td>
+                            <td>${projeto.nome}</td>
+                            <td>${projeto.dataCriacao}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    document.getElementById('projectsTable').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                document.getElementById('errorMessage').innerText = error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('projectsTable').style.display = 'none';
+            });
+    }
+</script>
+
+</body>
+</html>

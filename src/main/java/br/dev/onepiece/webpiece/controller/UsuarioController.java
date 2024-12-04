@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.dev.onepiece.webpiece.enums.TipoUsuario;
 import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.model.dto.UsuarioDTO;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository;
@@ -37,6 +38,20 @@ public class UsuarioController {
     	} );
     	
         return dtos;
+    }
+    
+    // Listar todos os clientes
+    @GetMapping("/clientes")
+    public ResponseEntity<List<Usuario>> listarClientes() {
+        List<Usuario> clientes = usuarioRepository.findByTipo(TipoUsuario.CLIENTE);
+        return ResponseEntity.ok(clientes);
+    }
+    
+ // Listar todos os projetistas
+    @GetMapping("/projetistas")
+    public ResponseEntity<List<Usuario>> listarProjetistas() {
+        List<Usuario> projetistas = usuarioRepository.findByTipo(TipoUsuario.PROJETISTA);
+        return ResponseEntity.ok(projetistas);
     }
 
     @GetMapping("/buscar/{id}")
