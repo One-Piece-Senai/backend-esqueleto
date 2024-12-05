@@ -12,6 +12,6 @@ public interface UsuarioRepository extends JpaRepository <Usuario, Long>{
 	
 	Optional<Usuario> findByEmail(String email);
 	
-	// Consulta para listar usuários do tipo "PROJETISTA"
+	// Consulta para listar usuários do tipo "PROJETISTA" ou "CLIENTE"
     List<Usuario> findByTipo(TipoUsuario tipo); // Usa a enum como parâmetro
 }
