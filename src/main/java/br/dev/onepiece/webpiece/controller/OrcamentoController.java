@@ -1,9 +1,11 @@
 package br.dev.onepiece.webpiece.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.validator.internal.util.privilegedactions.GetInstancesFromServiceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,8 @@ import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoDTO;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoRespostaDTO;
+import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
+import br.dev.onepiece.webpiece.model.dto.ProjetoProjDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
 import br.dev.onepiece.webpiece.repository.ProjetoRepository;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository;
@@ -90,7 +94,7 @@ public class OrcamentoController {
     
     //http://localhost:8080/orcamentos/listarProjetosAceitosPorUsuario/{idUsuario}
     @GetMapping("/listarProjetosAceitosPorUsuario/{idUsuario}")
-    public ResponseEntity<List<Projeto>> getProjetosAceitosByUsuarioId(@PathVariable Long idUsuario) {
+    public ResponseEntity<List<ProjetoProjDTO>> getProjetosAceitosByUsuarioId(@PathVariable Long idUsuario) {
         // Verificar se o usuário existe
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
         if (usuarioOptional.isPresent()) {
@@ -103,7 +107,25 @@ public class OrcamentoController {
                 projetosAceitos.add(orcamento.getProjeto());
             }
 
-            return ResponseEntity.ok(projetosAceitos); // Retorna a lista de projetos aceitos
+            List<ProjetoProjDTO> projs = new ArrayList<>();
+            projetosAceitos.forEach(o -> {
+            	
+            	projs.add(
+              			new ProjetoProjDTO(o.getId(), 
+            					o.getDescricao(), 
+            					o.getTitulo(), 
+            					o.getStatusprojeto(), 
+                    			o.getDataFinalizacao(),
+                    			o.getOrcamentos().get(0).getValor(), 
+                    			o.getOrcamentos().get(0).getDataEntrega(), 
+                    			o.getOrcamentos().get(0).getFormaPagamento(),
+                    			o.getOrcamentos().get(0).getStatus()
+                    			)            			
+            			);		
+            });            
+            
+            
+            return ResponseEntity.ok(projs); // Retorna a lista de projetos aceitos
         } else {
             return ResponseEntity.notFound().build(); // Retorna 404 se o usuário não existir
         }
