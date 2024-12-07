@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contagem de Status de Projetos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+        }
+        .status span {
+            font-weight: bold;
+        }
+        .status p {
+            margin: 5px 0;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contagem de Status dos Projetos</h1>
+        <label for="usuarioId">Digite o ID do Usuário:</label>
+        <input type="number" id="usuarioId" placeholder="Ex: 1" />
+        <button onclick="fetchContagem()">Ver Contagem de Status</button>
+
+        <div id="resultados">
+            <!-- Os resultados serão exibidos aqui -->
+        </div>
+    </div>
+
+    <script>
+        function fetchContagem() {
+            const usuarioId = document.getElementById('usuarioId').value;
+            if (!usuarioId) {
+                alert('Por favor, insira um ID de usuário válido!');
+                return;
+            }
+
+            // Limpar resultados anteriores
+            document.getElementById('resultados').innerHTML = 'Carregando...';
+
+            fetch(`http://localhost:8080/projetos/contar-status/${usuarioId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Verifique se a resposta é válida
+                    if (data) {
+                        const resultContainer = document.getElementById('resultados');
+                        resultContainer.innerHTML = `
+                            <div class="status">
+                                <p><span>EM_ANDAMENTO:</span> ${data.EM_ANDAMENTO}</p>
+                                <p><span>CONCLUIDO:</span> ${data.CONCLUIDO}</p>
+                                <p><span>ABERTO:</span> ${data.ABERTO}</p>
+                                <p><span>NAO_INICIADO:</span> ${data.NAO_INICIADO}</p>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('resultados').innerHTML = 'Nenhum dado encontrado para este usuário.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar contagem de status:', error);
+                    document.getElementById('resultados').innerHTML = 'Erro ao carregar os dados.';
+                });
+        }
+    </script>
+</body>
+</html>

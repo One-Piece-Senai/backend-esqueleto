@@ -2,6 +2,7 @@ package br.dev.onepiece.webpiece.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
 import br.dev.onepiece.webpiece.repository.ProjetoRepository;
 import br.dev.onepiece.webpiece.repository.UsuarioRepository;
+import br.dev.onepiece.webpiece.service.ProjetoService;
 
 @RestController
 @CrossOrigin(origins = "*") // Permite requisições de qualquer origem
@@ -40,6 +42,9 @@ public class ProjetoController {
 
     @Autowired
     private ProjetoRepository projetoRepository;
+    
+    @Autowired
+    private ProjetoService projetoService;
 
     // Listar todos os projetos
     @GetMapping("/listar")
@@ -64,6 +69,12 @@ public class ProjetoController {
         }
 
         return dtos;
+    }
+    
+    @GetMapping("/contar-status/{usuarioId}")
+    public ResponseEntity<Map<String, Long>> contarProjetosPorStatus(@PathVariable Long usuarioId) {
+        Map<String, Long> contagem = projetoService.contarProjetosPorStatus(usuarioId);
+        return ResponseEntity.ok(contagem);
     }
     
     @GetMapping("/listar-com-orcamento-projetista/{id}")
