@@ -1,11 +1,9 @@
 package br.dev.onepiece.webpiece.controller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.validator.internal.util.privilegedactions.GetInstancesFromServiceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,6 @@ import br.dev.onepiece.webpiece.model.Projeto;
 import br.dev.onepiece.webpiece.model.Usuario;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoDTO;
 import br.dev.onepiece.webpiece.model.dto.OrcamentoRespostaDTO;
-import br.dev.onepiece.webpiece.model.dto.ProjetoDTO;
 import br.dev.onepiece.webpiece.model.dto.ProjetoProjDTO;
 import br.dev.onepiece.webpiece.repository.OrcamentoRepository;
 import br.dev.onepiece.webpiece.repository.ProjetoRepository;
@@ -57,6 +54,61 @@ public class OrcamentoController {
        });
        return dtos;
     }
+    
+    
+ // Listar orçamentos por projeto (ID do projeto)
+    @GetMapping("/listarPorProjeto/{idProjeto}")
+    public ResponseEntity<List<OrcamentoRespostaDTO>> getOrcamentosByProjetoId(@PathVariable Long idProjeto) {
+        // Verifica se o projeto existe
+        Optional<Projeto> projetoOptional = projetoRepository.findById(idProjeto);
+        if (projetoOptional.isPresent()) {
+            // Busca os orçamentos relacionados ao projeto
+            List<Orcamento> orcamentos = orcamentoRepository.findByProjetoId(idProjeto);
+            List<OrcamentoRespostaDTO> dtos = new ArrayList<>();
+            
+            orcamentos.forEach(o -> {
+                dtos.add(new OrcamentoRespostaDTO(o.getId(), o.getValor(), o.getDataEntrega(), o.getFormaPagamento(), o.getStatus(), o.getUsuario()));
+            });
+            
+            return ResponseEntity.ok(dtos);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>());
+        }
+    }
+    
+ // Aceitar um orçamento e recusar os outros
+    @PutMapping("/aceitar/{id}")
+    public ResponseEntity<?> aceitarOrcamento(@PathVariable Long id) {
+        Optional<Orcamento> orcamentoOptional = orcamentoRepository.findById(id);
+
+        if (orcamentoOptional.isPresent()) {
+            Orcamento orcamentoAceito = orcamentoOptional.get();
+
+            // Verifica se o orçamento já foi aceito
+            if (orcamentoAceito.getStatus() == StatusOrcamentos.ACEITO) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Orçamento já foi aceito.");
+            }
+
+            // Atualiza o status do orçamento para ACEITO
+            orcamentoAceito.setStatus(StatusOrcamentos.ACEITO);
+            orcamentoRepository.save(orcamentoAceito);
+
+            // Recusa os outros orçamentos do mesmo projeto
+            List<Orcamento> outrosOrcamentos = orcamentoRepository.findByProjetoId(orcamentoAceito.getProjeto().getId());
+            outrosOrcamentos.forEach(o -> {
+                if (!o.getId().equals(id)) {
+                    o.setStatus(StatusOrcamentos.RECUSADO);
+                    orcamentoRepository.save(o);
+                }
+            });
+
+            return ResponseEntity.ok("Orçamento aceito com sucesso e os outros foram recusados.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Orçamento não encontrado.");
+        }
+    }
+
+
     
  // Listar orçamentos por status (escolher o Status)
  // http://localhost:8080/orcamentos/listarPorStatus/ACEITO
@@ -187,11 +239,19 @@ public class OrcamentoController {
 
         if (orcamentoOptional.isPresent()) {
             Orcamento orcamento = orcamentoOptional.get();
-            orcamento.setStatus(status);  // Atualiza o status do orcamento com o novo valor
+
+            // Verifica se o orçamento tem o status ACEITO e tenta mudar para RECUSADO ou EM_ANALISE
+            if (orcamento.getStatus() == StatusOrcamentos.ACEITO && 
+                (status == StatusOrcamentos.RECUSADO || status == StatusOrcamentos.EM_ANALISE)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Não é permitido alterar o status de APROVADO para RECUSADO ou EM_ANALISE.");
+            }
+
+            orcamento.setStatus(status); // Atualiza o status do orçamento com o novo valor
             Orcamento orcamentoAtualizado = orcamentoRepository.save(orcamento);
-            return ResponseEntity.ok(orcamentoAtualizado);  // Retorna o orcamento atualizado
+            return ResponseEntity.ok(orcamentoAtualizado); // Retorna o orçamento atualizado
         } else {
-            return ResponseEntity.notFound().build();  // Retorna 404 se o orcamento não for encontrado
+            return ResponseEntity.notFound().build(); // Retorna 404 se o orçamento não for encontrado
         }
     }
     
